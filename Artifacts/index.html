@@ -1,0 +1,1443 @@
+<!doctype html>
+<html>
+	<head>
+		<title>ME1312.net Uno</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta property="og:site_name" content="ME1312.net">
+		<meta property="og:title" content="ME1312.net Uno">
+		<meta property="og:image" content="https://src.ME1312.net/img/logo.png">
+		<meta property="og:type" content="website">
+		<meta property="og:locale" content="en_US">
+		<meta property="og:description" content="Play Uno on ME1312.net">
+		<link href="//use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet" media="screen">
+	</head>
+	<body>
+		<style>
+			* {
+				font-family: Avenir;
+			}
+			body {
+				margin: 0px;
+			}
+			a {
+				color: #2C78FF;
+				text-decoration: none;
+			}
+			a:hover {
+				color: gray;
+			}
+			data {
+				display: none;
+			}
+			div.loading img {
+				width: 128px;
+			}
+			div.loading p {
+				position: relative;
+				top: -80px;
+				margin: 0px;
+				padding: 0px;
+			}
+			div.buffering {
+				display: inline-block;
+				background: transparent url(https://src.ME1312.net/img/buffer.php) no-repeat center center;
+				background-size: contain;
+				width: 100%;
+				height: 100%;
+			}
+			div.page {
+				display: inline-flex;
+				position: fixed;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+			}
+			div.page > div {
+				position: relative;
+				flex-grow: 1;
+				flex-shrink: 0;
+			}
+			div.login,
+			div.game,
+			div.game > div.winner {
+				position: absolute;
+				z-index: 9998;
+				background: #222;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+			}
+			div.login {
+				position: fixed;
+			}
+			div.game {
+				z-index: 1;
+				background-color: #e12e2e;
+				overflow: hidden;
+			}
+			div.login > div {
+				position: fixed;
+				top: 4%;
+				left: 50%;
+  				transform: translate(-50%, 0);
+				z-index: 9999;
+            	background: #EEE;
+            	border: 1px solid #D5D5D6;
+            	border-top-color: #E0E1E2;
+            	border-bottom-color: #C0C1C2;
+            	margin: 0px auto 0px auto;
+            	padding: 0px;
+				padding-top: 20px;
+            	width: 730px;
+            	box-shadow: 0px 1px 3px rgba(0,0,0,0.1);
+        	}
+			div.login > div div.header a {
+				text-decoration: underline;
+			}
+			div.login > div div.header h2 {
+				margin-top: 0px;
+				margin-bottom: 0px;
+			}
+			div.login > div div.header p {
+				margin-top: 0px;
+				color: rgb(125,125,125);
+				white-space: pre-line
+			}
+			div.login > div span.response {
+				color: #D00;
+			}
+			
+			div.chat > form button,
+			div.login > div button,
+			div.chat > form input,
+			div.login > div form input {
+				display: inline-block;
+				background-color: #DDD;
+				margin-bottom: 0;
+				font-weight: normal;
+				text-align: center;
+				-ms-touch-action: manipulation;
+				touch-action: manipulation;
+				background-image: none;
+				border: none;
+				border-radius: 0px;
+				white-space: nowrap;
+				padding: 8px 16px;
+				font-size: 1.125em;
+				text-decoration: none;
+				color: #000;
+				border-color: transparent;
+				-webkit-box-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+				box-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+				-webkit-transition: all 0.4s;
+				-o-transition: all 0.4s;
+				transition: all 0.4s;
+				cursor: pointer;
+				}
+			div.chat > form input,
+			div.login > div form input {
+				background-color: #FFF;
+				text-align: left;
+				cursor: text;
+			}
+			div.chat > form input:focus,
+			div.login > div form input:focus {
+				outline: none;
+			}
+			div.chat > form button,
+			div.login > div button {
+				color: #fff;
+				background-color: #1b6dff;
+			}
+			div.chat > form button:hover,
+			div.login > div button:hover {
+				background-color: #003acc;
+			}
+			div.game > a.chat,
+			div.game > div.game div.hand > div > a.autosort {
+				z-index: 2;
+   			 	opacity: 0.5;
+    			padding-top: 8px;
+    			padding-bottom: 8px;
+    			padding-left: 18px;
+   			 	padding-right: 18px;
+   			 	position: absolute;
+    			top: 0px;
+    			right: 0px;
+    			color: black;
+    			font: 14px/100% Font Awesome\ 5 Free;
+				font-weight: 900;
+    			text-decoration: none;
+    			text-shadow: 0 1px 0 #fff;
+    			-webkit-transition: all 0.2s ease-in-out;
+    			transition: all 0.2s ease-in-out;
+			}
+			div.game > div.game div.hand > div > a.autosort {
+				font-family: Avenir;
+				border-top: solid 0px rgba(0,0,0,.15);
+			}
+			div.game > div.game div.hand > div > a.autosort.active {
+				opacity: 1;
+				background-color: #e12e2e;
+				border-top-width: 1px;
+				padding-top: 7px;
+				color: white;
+			}
+			div.game > a.chat:hover,
+			div.game > div.game div.hand > div > a.autosort:hover {
+    			background-color: rgba(0,0,0,.25);
+    			opacity: 0.75;
+    			color: white;
+    			text-decoration: none;
+			}
+			div.game > div.game div.hand > div > a.autosort.active:hover {
+				opacity: 1;
+    			background-color: rgba(0,0,0,.125);
+				border-top-width: 0px;
+				padding-top: 8px;
+			}
+			div.game > a.chat:after {
+				content: '\F053';
+    			font-size: 1.2em;
+			}
+			div.game > div.game div.hand > div > a.autosort:after {
+				content: 'Auto Sort';
+				font-size: 1.2em;
+			}
+			div.game > a.chat.active:after {
+    			content: '\F054';
+			}
+			div.game > div.lobby div.title > img {
+				position: relative;
+				padding: 0px 5px;
+				max-width: 350px;
+				max-height: 200px;
+			}
+			div.game > div.lobby ul.players {
+				display: flex;
+				background-color: rgba(0,0,0,.15);
+				padding: 10px 0px;
+				padding-top: 30px;
+				margin: 0px;
+				position: absolute;
+				top: 205px;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				overflow-x: auto;
+			}
+			div.game > div.lobby ul.players > li {
+				display: inline-block;
+				padding: 5px;
+				flex-grow: 1;
+			}
+			div.game > div.lobby ul.players > li > div {
+				display: inline-block;
+				background-color: #EEE;
+				border-radius: 30px;
+				width: 200px;
+				height: 300px;
+				padding: 6px;
+				padding-bottom: 12px;
+				position: relative;
+				align-content: left;
+				text-align: left;
+			}
+			
+			div.game > div.lobby ul.players > li > div .avatar {
+				border-radius: 130px;
+				background-color: #222;
+				position: relative;
+				top: -2px;
+				width: 196px;
+				padding: 2px;
+			}
+			
+			div.game > div.lobby ul.players > li > div .avatar > div {
+				border-radius: 128px;
+				background: transparent no-repeat;
+				background-size: contain;
+				width: 100%;
+				padding-top: 100%;
+			}
+			
+			div.game > div.lobby ul.players > li > div .name {
+				display: block;
+				font-size: 20pt;
+				font-weight: bolder;
+				line-height: 1em;
+				word-break: break-all;
+			}
+			
+			div.game > div.lobby ul.players > li > div .name > a {
+				color: #000;
+			}
+			
+			div.game > div.lobby ul.players > li > div .tag {
+				display: block;
+				padding-top: 4px;
+				font-size: 12pt;
+				color: #444;
+				line-height: 1em;
+			}
+			
+			div.game > div.lobby ul.players > li > div .tag > span {
+				font-size: 9pt;
+				color: #888;
+			}
+			div.game > div.lobby ul.players > li > div .stats {
+				display: flex;
+				position: absolute;
+				left: 0;
+				right: 0;
+				bottom: 6px;
+				justify-content: space-evenly;
+			}
+			div.game > div.lobby ul.players > li > div .stats > span {
+				display: inline-flex;
+				font-size: 12pt;
+				justify-content: center;
+			}
+			div.game > div.lobby ul.players > li > div .stats > span.wins > i {
+				font-size: 14pt;
+				color: #f4b93c;
+				margin-right: 4px;
+			}
+			div.game > div.lobby ul.players > li > div .stats > span.cards > div {
+				display: inline-block;
+				background-color: #ccc;
+				border-radius: 4px;
+				width: 13px;
+				height: 20px;
+				margin-right: 4px;
+			}
+			div.game > div.game div.card {
+				display: block;
+				width: 166px;
+				height: 250px;
+				background-color: #000;
+				background-size: cover;
+				border-radius: 30px;
+			}
+			div.game > div.game div.players {
+				background-color: rgba(0,0,0,.15);
+				display: flex;
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				right: 0px;
+				justify-content: center;
+				overflow-x: auto;
+			}
+			div.game > div.game div.players > div {
+				-webkit-transition: all 0.15s ease-in-out;
+  				transition: all 0.15s ease-in-out;
+				width: 154px;
+				height: 75px;
+				overflow-y: hidden;
+				flex-shrink: 0;
+				cursor: pointer;
+			}
+			div.game > div.game div.players > div:not(:last-child) {
+				border-right: solid 2px #000;
+			}
+			div.game > div.game div.players > div.active {
+				background-color: #1b6dff;
+			}
+			div.game > div.game div.players > div:hover {
+				filter: invert(.15)
+			}
+			div.game > div.game div.players > div > img {
+				display: inline-block;
+				width: 75px;
+				height: 75px;
+				margin-right: 5px;
+				margin-left: 18px;
+			}
+			div.game > div.game div.players > div > div.card {
+				display: inline-block;
+				background-color: #EEE;
+				border-radius: 10px;
+				width: 33px;
+				height: 50px;
+				position: relative;
+				top: -48px;
+				margin-left: 5px;
+				margin-right: 18px;
+			}
+			div.game > div.game div.players > div > div.card > span {
+				font-size: 14pt;
+				position: relative;
+				top: 12px;
+			}
+			div.game > div.game h1.message {
+				z-index: -1;
+				background-color: #e12e2e;
+				position: absolute;
+				top: 85px;
+				left: 0;
+				right: 0;
+				color: white;
+				text-align: center;
+			}
+			div.game > div.game div.table {
+				padding-top: 175px;
+				display: flex;
+				justify-content: center;
+			}
+			div.game > div.game div.table > div.deck {
+				display: block;
+				position: relative;
+				width: 170px;
+				height: 250px;
+				margin-left: 7px;
+				margin-right: 7px;
+				background-image: url(https://www.me1312.net/uno/assets/deck.png);
+				background-size: cover;
+			}
+			div.game > div.game div.table > div.deck.active {
+				cursor: pointer;
+			}
+			div.game > div.game div.hand {
+				background-color: rgba(0,0,0,.15);
+				min-height: 170px;
+				position: absolute;
+				bottom: 0px;
+				left: 0px;
+				right: 0px;
+			}
+			div.game > div.game div.hand > div {
+				position: relative;
+			}
+			div.game > div.game div.hand > div > div.cards {
+				display: flex;
+				padding: 20px;
+				padding-bottom: 0px;
+				overflow-x: auto;
+				overflow-y: hidden;
+				justify-content: center;
+			}
+			div.game > div.game div.hand > div > div.cards .group {
+				display: inline-flex;
+				justify-content: center;
+			}
+			div.game > div.game div.hand > div > div.cards .group.unsorted:not(:empty) {
+				min-width: 100%;
+			}
+			div.game > div.game div.hand > div > div.cards div.card {
+				position: relative;
+				filter: invert(.25);
+				margin-right: -90px;
+				margin-bottom: -100px;
+				flex-shrink: 0;
+			}
+			div.game > div.game div.hand > div > div.cards div.card.active {
+				filter: none;
+				cursor: pointer;
+			}
+			div.game > div.game div.hand > div > div.cards div.card.active:hover {
+				top: -20px;
+			}
+			div.game > div.game div.hand > div > div.cards .group.unsorted > div.card:last-child {
+				margin-right: 0px;
+			}
+			div.game > div.game div.hand > div > div.cards > div.spacer {
+				z-index: -1;
+				display: block;
+				width: 90px;
+				height: 0px;
+			}
+			div.game > div.game div.wheel {
+				position: absolute;
+				background-color: rgba(0,0,0,.25);
+    			-webkit-backdrop-filter: blur(12px) contrast(1.75);
+				backdrop-filter: blur(12px) contrast(1.75);
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+			}
+			div.game > div.game div.wheel > div {
+				position: absolute;
+				top: 4%;
+				left: 50%;
+  				transform: translate(-50%, 0);
+            	margin: 0px auto 0px auto;
+            	padding: 0px;
+			}
+			div.game > div.game div.wheel > div > h2 {
+				color: white;
+			}
+			div.game > div.game div.wheel > div > div {
+				display: inline-block;
+				position: relative;
+				width: 125px;
+				height: 125px;
+				cursor: pointer;
+			}
+			
+			div.game > div.game div.wheel > div > div.red {
+				background-color: #ff5555;
+				border-top-left-radius: 100px;
+			}
+			div.game > div.game div.wheel > div > div.blue {
+				background-color: #5555ff;
+				border-top-right-radius: 100px;
+			}
+			div.game > div.game div.wheel > div > div.green {
+				background-color: #55aa55;
+				border-bottom-right-radius: 100px;
+				top: -5px;
+			}
+			div.game > div.game div.wheel > div > div.yellow {
+				background-color: #ffaa00;
+				border-bottom-left-radius: 100px;
+				top: -5px;
+			}
+			div.game > div.game div.wheel > div > div:hover {
+				filter: brightness(1.25);
+			}
+			div.game > div.winner {
+				z-index: 1;
+				background: #1b6dff;
+				position: absolute;
+				top: 0px;
+				bottom: 0px;
+				left: 0px;
+				right: 0px;
+			}
+			div.game > div.winner > img.nugget {
+				position: absolute;
+			}
+			div.game > div.winner > img.nugget.animation1 {
+				animation: nugget1 1s linear infinite;
+			}
+			div.game > div.winner > img.nugget.animation2 {
+				animation: nugget2 1s linear infinite;
+			}
+			div.game > div.winner > img.nugget.animation3 {
+				animation: nugget3 1s linear infinite;
+			}
+			div.game > div.winner > img.nugget.animation4 {
+				animation: nugget4 1s linear infinite;
+			}
+			@keyframes nugget1 {
+				100% {
+					transform: rotateZ(360deg);
+				}
+			}
+			@keyframes nugget2 {
+				100% {
+					transform: rotateZ(-360deg);
+				}
+			}
+			@keyframes nugget3 {
+				100% {
+					transform: rotateY(360deg);
+				}
+			}
+			@keyframes nugget4 {
+				100% {
+					transform: rotateY(-360deg);
+				}
+			}
+			div.game > div.winner > div {
+				z-index: 1;
+				display: flex;
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				align-items: center;
+  				justify-content: center;
+			}
+			div.game > div.winner > div > div {
+				text-align: center;
+			}
+			div.game > div.winner > div > div > img {
+				border-radius: 200px;
+				width: 350px;
+				height: 350px;
+			}
+			div.game > div.winner > div > div > h1 {
+				font-size: 32pt;
+				color: white;
+			}
+			div.chat {
+				max-width: 384px;
+				flex-grow: 0;
+			}
+			div.chat > ul {
+				display: block;
+				background: #1657cc;
+				padding: 5px;
+				margin: 0px;
+				position: absolute;
+				top: 0;
+				bottom: 38px;
+				left: 0;
+				right: 0;
+				overflow-y: scroll;
+			}
+			div.chat > ul > li {
+				display: block;
+				padding: 5px;
+				color: white;
+				word-wrap: break-word;
+				word-break: break-all;
+			}
+			div.chat > ul > li > span {
+				font-weight: bold;
+				color: #ccc;
+			}
+			div.chat > ul > li a {
+				color: white;
+			}
+			div.chat > ul > li a:hover {
+				color: white;
+				text-decoration: underline;
+			}
+			div.chat > form {
+				display: flex;
+			}
+			div.chat > form {
+				display: flex;
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				right: 0;
+			}
+			div.chat > form > input {
+				flex-grow: 1;
+			}
+			@font-face {
+    			font-family: Avenir;
+    			src: url("https://src.me1312.net/css/font/AvenirLTStd-Roman.otf");
+			}
+		</style>
+		<div class="login">
+			<div>
+				<center>
+					<div class="header">
+						<h2>ME1312.net Uno</h2>
+						<p>ME1312.net Uno Client v1.2a</p>
+						<hr>
+					</div>
+					<br>
+					<form class="login" style="display: none;" enctype="multipart/form-data" onSubmit="return SubDataClient.connect(window.location.hash.substr(1), $(this).children('input')[0].value)">
+						<span class="response"><span style="color: black;">This server requires a password</span></span><br>
+						<br>
+						<input type="password" placeholder="Password"/><button>Join</button>
+						<br>
+						<br>
+						<br>
+					</form>
+					<div class="loading">
+						<div class="buffering" style="width: 128px; height: 128px;"></div>
+						<br>
+						<br>
+					</div>
+					<div class="disconnected" style="display: none;">
+						<span class="response">You have been disconnected</span><br>
+						<br>
+						<button onclick="window.location.href = 'https://www.me1312.net/account/setup/eauth/#return=' + encodeURIComponent('http://' + location.hostname+':'+((location.port)?location.port:'80') + '#');">Reconnect</button>
+						<br>
+						<br>
+						<br>
+					</div>
+				</center>
+			</div>
+		</div>
+		<div class="page">
+			<div>
+				<div class="game">
+					<a class="chat active" title="Chat" href="javascript:void(0)" onclick="toggleChat()" draggable="false"></a>
+					<div class="lobby">
+						<center>
+							<div class="title"><img src="https://src.me1312.net/img/me1312.net.silhouette.png" style="top: -67px;" /><img src="https://www.me1312.net/uno/assets/logo.png" /></div>
+							<ul class="players"></ul>
+						</center>
+					</div>
+					<div class="game" style="display: none;">
+						<center>
+							<div class="players"></div>
+							<div class="table">
+								<div class="deck" onclick="drawCard()"></div>
+								<div class="card"></div>
+							</div>
+							<div class="hand">
+								<div>
+									<a class="autosort active" title="Auto Sort" href="javascript:void(0)" onclick="toggleAutoSort()" draggable="false"></a>
+									<div class="cards">
+										<span class="group black">
+											<span class="group -2"></span>
+											<span class="group -1"></span>
+										</span>
+										<span class="group red">
+											<span class="group 12"></span>
+											<span class="group 11"></span>
+											<span class="group 10"></span>
+											<span class="group 9"></span>
+											<span class="group 8"></span>
+											<span class="group 7"></span>
+											<span class="group 6"></span>
+											<span class="group 5"></span>
+											<span class="group 4"></span>
+											<span class="group 3"></span>
+											<span class="group 2"></span>
+											<span class="group 1"></span>
+											<span class="group 0"></span>
+										</span>
+										<span class="group blue">
+											<span class="group 12"></span>
+											<span class="group 11"></span>
+											<span class="group 10"></span>
+											<span class="group 9"></span>
+											<span class="group 8"></span>
+											<span class="group 7"></span>
+											<span class="group 6"></span>
+											<span class="group 5"></span>
+											<span class="group 4"></span>
+											<span class="group 3"></span>
+											<span class="group 2"></span>
+											<span class="group 1"></span>
+											<span class="group 0"></span>
+										</span>
+										<span class="group green">
+											<span class="group 12"></span>
+											<span class="group 11"></span>
+											<span class="group 10"></span>
+											<span class="group 9"></span>
+											<span class="group 8"></span>
+											<span class="group 7"></span>
+											<span class="group 6"></span>
+											<span class="group 5"></span>
+											<span class="group 4"></span>
+											<span class="group 3"></span>
+											<span class="group 2"></span>
+											<span class="group 1"></span>
+											<span class="group 0"></span>
+										</span>
+										<span class="group yellow">
+											<span class="group 12"></span>
+											<span class="group 11"></span>
+											<span class="group 10"></span>
+											<span class="group 9"></span>
+											<span class="group 8"></span>
+											<span class="group 7"></span>
+											<span class="group 6"></span>
+											<span class="group 5"></span>
+											<span class="group 4"></span>
+											<span class="group 3"></span>
+											<span class="group 2"></span>
+											<span class="group 1"></span>
+											<span class="group 0"></span>
+										</span>
+										<span class="group unsorted"></span>
+										<div class="spacer"></div>
+									</div>
+								</div>
+							</div>
+							<div class="wheel" style="display: none">
+								<div>
+									<h2>Choose a color</h2>
+									<div class="red" onclick="changeColor('RED')"></div><div class="blue" onclick="changeColor('BLUE')"></div><br><div class="yellow" onclick="changeColor('YELLOW')"></div><div class="green" onclick="changeColor('GREEN')"></div>
+								</div>
+							</div>
+						</center>
+					</div>
+					<div class="winner" style="display: none">
+						<div>
+							<div>
+								<img src="about:blank" />
+								<br>
+								<h1>Somebody Wins!</h1>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="chat">
+				<ul></ul>
+				<form enctype="multipart/form-data" onSubmit="return chat($(this).children('input[type=text]')[0].value)">
+					<input type="text" placeholder="Write your message here..."/><button>Send</button>
+				</form>
+			</div>
+		</div>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+		<script src="https://code.jquery.com/color/jquery.color.plus-names-2.1.2.min.js" integrity="sha256-Wp3wC/dKYQ/dCOUD7VUXXp4neLI5t0uUEF1pg0dFnAE=" crossorigin="anonymous"></script>
+		<script>
+			window.onload = function() {
+				setInterval(function() {
+					if ($('div.game > div.winner').is(':visible')) {
+						var id = nuggetid++;
+						var left;
+						$('div.game > div.winner').append('<img class="nugget animation' + (Math.floor(Math.random() * 4) + 1) + '"src="https://www.me1312.net/uno/assets/nugget' + (Math.floor(Math.random() * 3) + 1) + '.png" data-nid="' + id + '" style="width: ' + (Math.floor(Math.random() * 100) + 175) + 'px; animation-duration: ' + (Math.floor(Math.random() * 1000) + 500) + 'ms; top: -332px; left: ' + (left = Math.floor(Math.random() * ($('div.game > div.winner').width() + 258) - 258)) + 'px" />');
+						$('div.game > div.winner > img[data-nid=' + id + ']').animate({
+							top: $('div.game > div.winner').height(),
+							left: left + (250 - Math.floor(Math.random() * 500))
+						}, $('div.game > div.winner').height() * ((Math.random() * 3) + 1), "linear", function() {
+							$('div.game > div.winner > img[data-nid=' + id + ']').remove();
+						});
+					}
+				}, 75);
+				
+				if (window.location.hash.length <= 1) {
+					window.location.href = "https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#');
+				} else {
+					$('div.game > div.game div.hand > div > div.cards > .group.unsorted').sortable({
+						scroll: false,
+						start: function() {
+							$('div.game > div.game div.hand > div > div.cards div.card').addClass('dragging');
+						}
+					});
+					
+					var join = function(data) {
+						playerJoin(data.player);
+						SubDataClient.Protocol.playerjoin.callbacks.push(join);
+					}
+					SubDataClient.Protocol.playerjoin.callbacks.push(join);
+					
+					var quit = function(data) {
+						console.log(players[data.player].profile.displayName + ' (' + ((data.player == '+' + players[data.player].profile.id)?'':'@') + data.player + ') has quit');
+						$('[data-pid=' + players[data.player].profile.id + ']').remove();
+						delete players[data.player];
+						SubDataClient.Protocol.playerquit.callbacks.push(quit);
+					}
+					SubDataClient.Protocol.playerquit.callbacks.push(quit);
+					
+					var start = function(data) {
+						$('div.game > div.game div.players').html("");
+						for (var i in data.order) {
+							$('div.game > div.game div.players').append('<div title="' + players[data.order[i]].profile.displayName + '" data-pid="' + players[data.order[i]].profile.id + '" data-pname="' + players[data.order[i]].profile.name + '" onclick="selectPlayer($(this))"><img src="' + ((players[data.order[i]].profile.image.isDefault)?'https://src.ME1312.net/img/avatar.inverted.svg':((players[data.order[i]].profile.image.hasOwnProperty('xlurl')))?players[data.order[i]].profile.image.xlurl:players[data.order[i]].profile.image.url) + '" /><div class="card"><span>' + ((data.hasOwnProperty('cards'))?Object.keys(data.cards).length:0) + '</span></div></div>');
+						}
+						$('div.game > div.game h1.message').remove();
+						$('div.game > div.game div.table > div.deck').removeClass('active');
+						$('div.game > div.game div.table > div.card').css({"background-image": "url(https://www.me1312.net/uno/assets/" + data.houseCard.number + ".png)", "background-color": cardcolor[data.houseCard.color]})
+						$('div.game > div.game div.hand > div > div.cards div.card').remove();
+						if (data.hasOwnProperty('cards')) {
+							for (var id in data.cards) {
+								$('div.game > div.game div.hand > div > div.cards > .group.' + (($('div.game > div.game div.hand > div > a.autosort').hasClass('active'))?data.cards[id].color.toLowerCase()+' > .group.'+data.cards[id].number:'unsorted')).append('<div class="card" data-cid="' + id + '" data-cnumber="' + data.cards[id].number + '" data-ccolor="' + data.cards[id].color + '" style="background-image: url(https://www.me1312.net/uno/assets/' + data.cards[id].number + ".png); background-color: " + cardcolor[data.cards[id].color] + '" onclick="playCard($(this))"></div>');
+							}
+							$('div.game > div.game div.hand').show();
+						} else {
+							$('div.game > div.game div.hand').hide();
+						}
+						$('div.game > div.lobby').hide();
+						$('div.game > div.game').show();
+						SubDataClient.Protocol.startgame.callbacks.push(start);
+					}
+					SubDataClient.Protocol.startgame.callbacks.push(start);
+					
+					var alert = function(data) {
+						var id = messageid++;
+						$('div.game > div.game').append('<h1 class="message" data-mid="' + id + '">' + data.message + '</h1>');
+						setTimeout(function() {
+							$('div.game > div.game h1.message[data-mid=' + id + ']').fadeOut(500, function() {
+								$('div.game > div.game h1.message[data-mid=' + id + ']').remove();
+							});
+						}, 2500);
+						SubDataClient.Protocol.alert.callbacks.push(alert);
+					}
+					SubDataClient.Protocol.alert.callbacks.push(alert);
+					
+					var message = function(data) {
+						while ($('div.chat > ul > *').length >= 500) {
+							$($('div.chat > ul > *')[0]).remove();
+						}
+						var scroll = $('div.chat > ul')[0].scrollHeight - $('div.chat > ul')[0].clientHeight <= $('div.chat > ul')[0].scrollTop + 1;
+						var escape = function(string) {
+							return string
+								.replace(/</g, "&lt;")
+								.replace(/>/g, "&gt;")
+								.replace(/((?:(?:https?):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u{00a1}-\u{ffff}0-9]+-?)*[a-z\u{00a1}-\u{ffff}0-9]+)(?:\.(?:[a-z\u{00a1}-\u{ffff}0-9]+-?)*[a-z\u{00a1}-\u{ffff}0-9]+)*(?:\.(?:[a-z\u{00a1}-\u{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?)/gui, '<a href="$1" target="_blank" draggable="false">$1</a>')
+						}
+						if (data.hasOwnProperty('sender')) {
+							$('div.chat > ul').append('<li><span>' + players[data.sender].profile.displayName + '</span>&nbsp; ' + escape(data.message) + '</li>')
+						} else {
+							$('div.chat > ul').append('<li><span>' + escape(data.message) + '</span></li>');
+						}
+						if (scroll) $('div.chat > ul')[0].scrollTop = $('div.chat > ul')[0].scrollHeight;
+						SubDataClient.Protocol.message.callbacks.push(message);
+					}
+					SubDataClient.Protocol.message.callbacks.push(message);
+					
+					var beginturn = function(data) {
+						$('div.game > div.game div.players > div.active').removeClass('active');
+						$('div.game > div.game div.players > div[data-pid=' + players[data.player].profile.id + ']').addClass('active');
+						if (data.player == self) {
+							if (data.canDraw) {
+								$('div.game > div.game div.table > div.deck').addClass('active');
+							} else {
+								$('div.game > div.game div.table > div.deck').removeClass('active');
+							}
+							for (var i = 0; i < data.cards.length; i++) {
+								$('.card[data-cid=' + data.cards[i] + ']').addClass('active');
+							}
+						} else {
+							$('div.game > div.game div.table > div.deck').removeClass('active');
+							$('div.game > div.game div.hand > div > div.cards div.card').removeClass('active');
+						}
+						SubDataClient.Protocol.beginturn.callbacks.push(beginturn);
+					}
+					SubDataClient.Protocol.beginturn.callbacks.push(beginturn);
+					
+					
+					var addcard = function(data) {
+						if (data.player == self) {
+							$('div.game > div.game div.hand > div > div.cards > .group.' + (($('div.game > div.game div.hand > div > a.autosort').hasClass('active'))?data.card.color.toLowerCase()+' > .group.'+data.card.number:'unsorted')).append('<div class="card" data-cid="' + data.card.id + '" data-cnumber="' + data.card.number + '" data-ccolor="' + data.card.color + '" style="background-image: url(https://www.me1312.net/uno/assets/' + data.card.number + ".png); background-color: " + cardcolor[data.card.color] + '" onclick="playCard($(this))"></div>');
+						}
+						$('div.game > div.game div.players > div[data-pid=' + players[data.player].profile.id + '] > div.card > span').html(parseInt($('div.game > div.game div.players > div[data-pid=' + players[data.player].profile.id + '] > div.card > span').html()) + 1);
+						SubDataClient.Protocol.addcard.callbacks.push(addcard);
+					}
+					SubDataClient.Protocol.addcard.callbacks.push(addcard);
+					
+					
+					var playcard = function(data) {
+						if (data.player == self) {
+							$('.card[data-cid=' + data.card.id + ']').remove();
+							$('div.game > div.game div.hand > div > div.cards div.card').removeClass('active');
+							$('div.game > div.game div.table > div.deck').removeClass('active');
+						}
+						$('div.game > div.game div.players > div[data-pid=' + players[data.player].profile.id + '] > div.card > span').html(parseInt($('div.game > div.game div.players > div[data-pid=' + players[data.player].profile.id + '] > div.card > span').html()) - 1);
+						players[data.player].stats.cardsPlayed++;
+						$('div.game > div.lobby ul.players > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.cards > span').html(players[data.player].stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+						$('div.game > div.game div.table > div.card').css({
+							"background-image": "url(https://www.me1312.net/uno/assets/" + data.card.number + ".png)",
+							"background-color": cardcolor[data.card.color],
+							"width": "180px",
+							"height": "270px",
+							"margin-left": "0px",
+							"margin-right": "0px",
+							"top": "-15px"
+						});
+						$('div.game > div.game div.table > div.card').animate({
+							"width": "166px",
+							"height": "250px",
+							"margin-left": "7px",
+							"margin-right": "7px",
+							"top": "0px"
+						}, 150);
+						SubDataClient.Protocol.playcard.callbacks.push(playcard);
+					}
+					SubDataClient.Protocol.playcard.callbacks.push(playcard);
+					
+					var changecolor = function() {
+						$('div.game > div.game div.wheel').fadeIn(250);
+						SubDataClient.Protocol.changecolor.callbacks.push(changecolor);
+					}
+					SubDataClient.Protocol.changecolor.callbacks.push(changecolor);
+					
+					var updatecolor = function(data) {
+						$('div.game > div.game div.table > div.card').animate({"background-color": cardcolor[data.color]}, 250);
+						SubDataClient.Protocol.updatecolor.callbacks.push(updatecolor);
+					}
+					SubDataClient.Protocol.updatecolor.callbacks.push(updatecolor);
+					
+					var swaphand = function() {
+						$('div.game > div.game').append('<h1 class="message swaphands">Choose someone to swap hands with</h1>');
+						SubDataClient.Protocol.swaphand.callbacks.push(swaphand);
+					}
+					SubDataClient.Protocol.swaphand.callbacks.push(swaphand);
+					
+					var updatehand = function(data) {
+						$('div.game > div.game h1.message.swaphands').remove();
+						for (var player in data.others) {
+							$('div.game > div.game div.players > div[data-pid=' + players[player].profile.id + '] > div.card > span').html(data.others[player]);
+						}
+						$('div.game > div.game div.hand > div > div.cards div.card').remove();
+						if (data.hasOwnProperty('self')) {
+							for (var id in data.self) {
+								$('div.game > div.game div.hand > div > div.cards > .group.' + (($('div.game > div.game div.hand > div > a.autosort').hasClass('active'))?data.self[id].color.toLowerCase()+' > .group.'+data.self[id].number:'unsorted')).append('<div class="card" data-cid="' + id + '" data-cnumber="' + data.self[id].number + '" data-ccolor="' + data.self[id].color + '" style="background-image: url(https://www.me1312.net/uno/assets/' + data.self[id].number + ".png); background-color: " + cardcolor[data.self[id].color] + '" onclick="playCard($(this))""></div>');
+							}
+						}
+						SubDataClient.Protocol.updatehand.callbacks.push(updatehand);
+					}
+					SubDataClient.Protocol.updatehand.callbacks.push(updatehand);
+					
+					var endturn = function() {
+						$('div.game > div.game h1.message.swaphands').remove();
+						$('div.game > div.game div.hand > div > div.cards div.card').removeClass('active');
+						$('div.game > div.game div.table > div.deck').removeClass('active');
+						$('div.game > div.game div.wheel').hide();
+						SubDataClient.Protocol.endturn.callbacks.push(endturn);
+					}
+					SubDataClient.Protocol.endturn.callbacks.push(endturn);
+					
+					var stop = function(data) {
+						if (data.hasOwnProperty("winner")) {
+							$('div.game > div.winner > div > div img').attr('src', ((players[data.winner].profile.image.isDefault)?'https://src.ME1312.net/img/avatar.inverted.svg':((players[data.winner].profile.image.hasOwnProperty('xlurl')))?players[data.winner].profile.image.xlurl:players[data.winner].profile.image.url));
+							$('div.game > div.winner > div > div h1').html((data.winner == self)?"Winner Winner Chicken Dinner!":players[data.winner].profile.displayName + ' Wins!');
+							players[data.winner].stats.gamesWon++;
+							$('div.game > div.lobby ul.players > li[data-pid=' + players[data.winner].profile.id + '] > div .stats > span.wins > span').html(players[data.winner].stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+							setTimeout(function() {
+								$('div.game > div.winner').fadeIn(250, function() {
+									$('div.game > div.game').hide();
+									$('div.game > div.lobby').show();
+									setTimeout(function() {
+										$('div.game > div.winner').fadeOut(250);
+									}, 7250);
+								});
+							}, 1750);
+						} else {
+							$('div.game > div.game').hide();
+							$('div.game > div.lobby').show();
+						}
+						SubDataClient.Protocol.endgame.callbacks.push(stop);
+					}
+					SubDataClient.Protocol.endgame.callbacks.push(stop);
+				
+					SubDataClient.connect(window.location.hash.substr(1), "");
+				}
+			};
+			var cardcolor = {
+				RED: "#ff5555",
+				BLUE: "#5555ff",
+				GREEN: "#55aa55",
+				YELLOW: "#ffaa00",
+				BLACK: "#000000"
+			}
+			var nuggetid = 0;
+			var messageid = 0;
+			var self = null;
+			var players = {};
+			function playerJoin(player) {
+				if (!players.hasOwnProperty(player.profile.name)) {
+					$('div.game > div.lobby ul').append('<li data-pid="' + player.profile.id + '"><div><div class="avatar"><div style="background-image: url(' + ((player.profile.image.isDefault)?'https://src.ME1312.net/img/avatar.inverted.svg':((player.profile.image.hasOwnProperty('xlurl')))?player.profile.image.xlurl:player.profile.image.url) + ')"></div></div><span class="name">' + player.profile.displayName + '</span><span class="tag">' + ((player.profile.name == '+' + player.profile.id)?'':'@') + player.profile.name + ((player.profile.name == '+' + player.profile.id)?'':'<span>#' + player.profile.id + '</span>') + '</span><div class="stats"><span class="wins" title="Number of wins"><i class="fas fa-trophy"></i><span>' + player.stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span><span class="cards" title="Number of cards played"><div></div><span>' + player.stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span></div></div>');
+					players[player.profile.name] = player;
+					console.log(player.profile.displayName + ' (' + ((player.profile.name == '+' + player.profile.id)?'':'@') + player.profile.name + ') has joined');
+				}
+			}
+			
+			function chat(message) {
+				if (message.length > 0) {
+					$('div.chat > form input')[0].value = "";
+					SubDataClient.send(SubDataClient.Protocol.message.out(message));
+				}
+				return false;
+			}
+			
+			function toggleChat() {
+				if ($('div.chat').is(":visible")) {
+					$('div.game > a.chat').removeClass('active');
+					$('div.chat').hide();
+					window.resizeBy(-384, 0);
+				} else {
+					$('div.game > a.chat').addClass('active');
+					window.resizeBy(384, 0);
+					$('div.chat').show();
+					$('div.chat > ul')[0].scrollTop = $('div.chat > ul')[0].scrollHeight;
+				}
+			}
+			
+			function toggleAutoSort() {
+				 if ($('div.game > div.game div.hand > div > a.autosort').hasClass('active')) {
+					 $('div.game > div.game div.hand > div > a.autosort').removeClass('active');
+					 var ids = [];
+					 var cards = {};
+					 var get = function(i, e) {
+						 var element = $(e).detach();
+						 ids.push(parseInt(element.data('cid')));
+						 cards[parseInt(element.data('cid'))] = element;
+					 }
+					 $('div.game > div.game div.hand > div > div.cards > * > div.card').each(get);
+					 $('div.game > div.game div.hand > div > div.cards > * > * > div.card').each(get);
+					 ids.reverse();
+					 for (var i = 0; i < ids.length; i++) {
+						 cards[ids[i]].prependTo('div.game > div.game div.hand > div > div.cards > .group.unsorted');
+					 }
+				 } else {
+					 $('div.game > div.game div.hand > div > a.autosort').addClass('active');
+					 $('div.game > div.game div.hand > div > div.cards > .group.unsorted div.card').each(function(i, e) {
+						 var element = $(e).detach();
+						 element.appendTo('div.game > div.game div.hand > div > div.cards > .group.'+element.data('ccolor').toLowerCase()+' > .group.'+element.data('cnumber'));
+					 });
+				 }
+			}
+			
+			function playCard(element) {
+				if (element.hasClass('dragging')) {
+					$('div.game > div.game div.hand > div > div.cards div.card').removeClass('dragging');
+					$('div.game > div.game div.hand > div > div.cards div.card').attr('style', function(i, style) {
+						return style && style.replace(/top[^;]+;?/g, '').replace(/left[^;]+;?/g, '');
+					});
+				} else if (element.hasClass('active')) {
+					SubDataClient.send(SubDataClient.Protocol.playcard.out(element.data("cid").toString()))
+				}
+			}
+			
+			function drawCard() {
+				if ($('div.game > div.game div.table > div.deck').hasClass("active")) {
+					SubDataClient.send(SubDataClient.Protocol.drawcard.out());
+				}
+			}
+			
+			function changeColor(color) {
+				if ($('div.game > div.game div.wheel').is(":visible")) {
+					SubDataClient.send(SubDataClient.Protocol.changecolor.out(color));
+					$('div.game > div.game div.wheel').fadeOut(250);
+				}
+			}
+			
+			function selectPlayer(element) {
+				if (element.data("pname") != self && $('div.game > div.game h1.message.swaphands').is(":visible")) {
+					SubDataClient.send(SubDataClient.Protocol.swaphand.out(element.data("pname")));
+				} else {
+					SubDataClient.send(SubDataClient.Protocol.callout.out(element.data("pname")));
+				}
+			}
+			
+			var SubDataClient = {
+				firstrun: true,
+				connection: null,
+				connect: function(profile, password) {
+					if (SubDataClient.connection == null) {
+						var header = {
+							element: $("div.login > div div.header p"),
+							initalValue: $("div.login > div div.header p").html()
+						}
+						$($("div.login > div form.login").children("input")[0]).prop('disabled', true);
+						$($("div.login > div form.login").children("button")[0]).prop('disabled', true);
+						header.element.fadeOut(50, function() {
+							header.element.html("Connecting to " + location.hostname+':'+((location.port)?location.port:'80'));
+							header.element.fadeIn(50);
+						})
+						$("div.login > div form.login").fadeOut(150, function() {
+							$($("div.login > div form.login").children(".response")[0]).html("");
+							$($($("div.login > div form.login").parent()).children(".loading")[0]).fadeIn(150, function() {
+								var connection = new WebSocket("ws://" + location.hostname+':'+((location.port)?location.port:'80') + "/game");
+								connection.onerror = function() {
+									header.element.fadeOut(50, function() {
+										header.element.html(header.initalValue);
+										header.element.fadeIn(50);
+									});
+									$($($("div.login > div form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
+										$($("div.login > div form.login").children("input")[0]).prop('disabled', false);
+										$($("div.login > div form.login").children("button")[0]).prop('disabled', false);
+										if (!$("div.login > div form.login").is(":visible")) $("div.login > div div.disconnected").fadeIn(150);
+										SubDataClient.connection = null;
+										$("div.login").fadeIn(500);
+									});
+								};
+								connection.onopen = function() {
+									header.element.fadeOut(50, function() {
+										header.element.html("Logging into " + location.hostname+':'+((location.port)?location.port:'80'));
+										$("div.login > div form.login").children("input")[0].value = "";
+										header.element.fadeIn(50, function() {
+											setTimeout(function() {
+												SubDataClient.connection = connection;
+												SubDataClient.send(SubDataClient.Protocol.authorization.out(profile, password, function(data) {
+													if (data.r == 0) {
+														window.location.hash = "";
+														while (SubDataClient.queue.length != 0) {
+															connection.send(SubDataClient.queue[0]);
+															SubDataClient.queue.splice(0, 1);
+														}
+														$("div.login > div div.header p").fadeOut(50, function() {
+															$("div.login > div div.header p").html("Downloading Page Content");
+															$("div.login > div div.header p").fadeIn(50, function() {
+																setTimeout(function() {
+																	self = data.m;
+																	SubDataClient.send(SubDataClient.Protocol.playerlist.out(function(data) {
+																		for (var player in data.players) {
+																			playerJoin(data.players[player]);
+																		}
+																		SubDataClient.send(SubDataClient.Protocol.spectategame.out());
+																		$("div.login").fadeOut(500);
+																	}));
+																});
+															});
+														});
+													} else if (data.r == 3) {
+														connection.close();
+														window.location.href = "https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#');
+													} else {
+														if ((data.r == 4)) {
+															$($('div.login > div div.disconnected').children('.response')).html("You are already logged into this server");
+															connection.close();
+														} else {
+															$($("div.login > div form.login").children(".response")[0]).html((SubDataClient.firstrun)?"<span style=\"color: black;\">This server requires a password</span>":"That was the wrong password");
+															$($($("div.login > div form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
+																$("div.login > div form.login").fadeIn(150);
+																$("div.login").fadeIn(500);
+																connection.close();
+															});
+														}
+													}
+													SubDataClient.firstrun = false;
+												}));
+											}, 200);
+										});
+									})
+								};
+								connection.onmessage = function(event) {
+									var json = JSON.parse(event.data);
+									console.log(json);
+									SubDataClient.Protocol[json.h].in(json.c);
+								};
+								connection.onclose = function(event) {
+									header.element.fadeOut(50, function() {
+										header.element.html(header.initalValue);
+										header.element.fadeIn(50);
+									});
+									$($($("div.login > div form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
+										$($("div.login > div form.login").children("input")[0]).prop('disabled', false);
+										$($("div.login > div form.login").children("button")[0]).prop('disabled', false);
+										if (!$("div.login > div form.login").is(":visible")) $("div.login > div div.disconnected").fadeIn(150);
+										SubDataClient.connection = null;
+										$("div.login").fadeIn(500);
+									});
+								};
+							});
+						});
+					}
+					return false;
+				},
+				queue: [],
+				send: function(data) {
+					if (SubDataClient.connection == null) {
+						SubDataClient.queue.push(JSON.stringify(data));
+					} else {
+						SubDataClient.connection.send(JSON.stringify(data));
+					}
+				},
+				Protocol: {
+					authorization: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.authorization.callbacks;
+							SubDataClient.Protocol.authorization.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						},
+						out: function(profile, password, callback = null) {
+							if (callback != null) SubDataClient.Protocol.authorization.callbacks.push(callback);
+							return {h:"authorization", v:"1.0a", c:{profile: profile, password: password}};
+						},
+					},
+					callout: {
+						out: function(player) {
+							return {h:"callout", v:"1.0a", c:{player: player}};
+						}
+					},
+					changecolor: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.changecolor.callbacks;
+							SubDataClient.Protocol.changecolor.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						},
+						out: function(color) {
+							return {h:"changecolor", v:"1.0a", c:{color: color}};
+						}
+					},
+					drawcard: {
+						out: function() {
+							return {h:"drawcard", v:"1.0a"};
+						}
+					},
+					spectategame: {
+						out: function() {
+							return {h:"spectategame", v:"1.0a"};
+						}
+					},
+					message: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.message.callbacks;
+							SubDataClient.Protocol.message.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						},
+						out: function(message) {
+							return {h:"message", v:"1.0a", c:{message: message}};
+						}
+					},
+					addcard: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.addcard.callbacks;
+							SubDataClient.Protocol.addcard.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						}
+					},
+					alert: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.alert.callbacks;
+							SubDataClient.Protocol.alert.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						}
+					},
+					beginturn: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.beginturn.callbacks;
+							SubDataClient.Protocol.beginturn.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						}
+					},
+					endgame: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.endgame.callbacks;
+							SubDataClient.Protocol.endgame.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						}
+					},
+					endturn: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.endturn.callbacks;
+							SubDataClient.Protocol.endturn.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						}
+					},
+					playerjoin: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.playerjoin.callbacks;
+							SubDataClient.Protocol.playerjoin.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						}
+					},
+					playerquit: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.playerquit.callbacks;
+							SubDataClient.Protocol.playerquit.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						}
+					},
+					startgame: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.startgame.callbacks;
+							SubDataClient.Protocol.startgame.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						}
+					},
+					updatecolor: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.updatecolor.callbacks;
+							SubDataClient.Protocol.updatecolor.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						}
+					},
+					updatehand: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.updatehand.callbacks;
+							SubDataClient.Protocol.updatehand.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						}
+					},
+					playcard: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.playcard.callbacks;
+							SubDataClient.Protocol.playcard.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						},
+						out: function(card) {
+							return {h:"playcard", v:"1.0a", c:{card: card}};
+						}
+					},
+					playerlist: {
+						callbacks: {},
+						in: function(data) {
+							if (SubDataClient.Protocol.playerlist.callbacks[data.id] != null) SubDataClient.Protocol.playerlist.callbacks[data.id](data);
+							delete SubDataClient.Protocol.playerlist.callbacks[data.id];
+						},
+						out: function(callback = null) {
+							var id = getNew(SubDataClient.Protocol.playerlist.callbacks, randomString);
+							SubDataClient.Protocol.playerlist.callbacks[id] = callback;
+						
+							var json = {h:"playerlist", v:"1.0a", c:{id: id}};
+							return json;
+						}
+					},
+					swaphand: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.swaphand.callbacks;
+							SubDataClient.Protocol.swaphand.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						},
+						out: function(player) {
+							return {h:"swaphand", v:"1.0a", c:{player: player}};
+						}
+					}
+				}
+			}
+			
+		// Utility Methods
+		function getNew(object, func) {
+			var obj = null;
+			while (obj == null) {
+				var tmp = func();
+				if (!object.hasOwnProperty(tmp)) obj = tmp;
+			}
+			return obj;
+		}
+		function randomString(length = 64) {
+			var text = "";
+    		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+
+    		for( var i=0; i < length; i++ )
+        		text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    		return text;
+		}
+		</script>
+	</body>
+</html>

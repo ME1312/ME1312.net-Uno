@@ -1,0 +1,59 @@
+# ME1312.net Uno Ignored Files
+
+*.iml
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+## Directory-based project format:
+.idea/
+
+## File-based project format:
+*.ipr
+*.iws
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# IntelliJ
+/out/
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+
+# Hide Unfinished Project Files
+/Artifacts/SubServers.Client.Sponge.jar
+/SubServers.Client/Sponge/
+/SubServers.Client/Windows/
+/Artifacts/SubServers.Web.jar
+/SubServers.Web/
+
+# Hide Others
+/Artifacts/Logs/
+/Artifacts/Stats/
+/Artifacts/config.yml
+/Artifacts/launch.bat
+/Artifacts/loop.bat
+.DS_STORE
+.alias

@@ -1,0 +1,297 @@
+<!doctype html>
+<html>
+	<head>
+	</head>
+	<body>
+		<style>
+			* {
+				font-family: Avenir;
+			}
+			body {
+				margin: 0px;
+			}
+			a {
+				color: #2C78FF;
+				text-decoration: none;
+			}
+			a:hover {
+				color: gray;
+			}
+			data {
+				display: none;
+			}
+			div.loading img {
+				width: 128px;
+			}
+			div.loading p {
+				position: relative;
+				top: -80px;
+				margin: 0px;
+				padding: 0px;
+			}
+			body > div.login {
+				position: fixed;
+				z-index: 9998;
+				background: #222;
+				width: 100%;
+				height: 100%;
+			}
+			body > div.login > div {
+				position: fixed;
+				top: 4%;
+				left: 50%;
+  				transform: translate(-50%, 0);
+				z-index: 9999;
+            	background: #EEE;
+            	border: 1px solid #D5D5D6;
+            	border-top-color: #E0E1E2;
+            	border-bottom-color: #C0C1C2;
+            	margin: 0px auto 0px auto;
+            	padding: 0px;
+				padding-top: 20px;
+            	width: 730px;
+            	box-shadow: 0px 1px 3px rgba(0,0,0,0.1);
+        	}
+			body > div.login > div div.header a {
+				text-decoration: underline;
+			}
+			body > div.login > div div.header h2 {
+				margin-top: 0px;
+				margin-bottom: 0px;
+			}
+			body > div.login > div div.header p {
+				margin-top: 0px;
+				color: rgb(125,125,125);
+				white-space: pre-line
+			}
+			body > div.login > div span.response {
+				color: #D00;
+			}
+			body > div.login > div form button,
+			body > div.login > div form input {
+				display: inline-block;
+				background-color: #DDD;
+				margin-bottom: 0;
+				font-weight: normal;
+				text-align: center;
+				-ms-touch-action: manipulation;
+				touch-action: manipulation;
+				background-image: none;
+				border: none;
+				border-radius: 0px;
+				white-space: nowrap;
+				padding: 8px 16px;
+				font-size: 1.125em;
+				text-decoration: none;
+				color: #000;
+				border-color: transparent;
+				-webkit-box-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+				box-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+				-webkit-transition: all 0.4s;
+				-o-transition: all 0.4s;
+				transition: all 0.4s;
+				cursor: pointer;
+				}
+			body > div.login > div form input {
+				background-color: #FFF;
+				text-align: left;
+				cursor: text;
+			}
+			body > div.login > div form input:focus {
+				outline: none;
+			}
+			body > div.login > div form button {
+				color: #fff;
+				background-color: #1b6dff;
+			}
+			body > div.login > div form button:hover {
+				background-color: #003acc;
+			}
+			div.buffering {
+				display: inline-block;
+				background: transparent url(https://src.ME1312.net/img/buffer.php) no-repeat center center;
+				background-size: contain;
+				width: 100%;
+				height: 100%;
+			}
+			@font-face {
+    			font-family: Avenir;
+    			src: url("https://src.me1312.net/css/font/AvenirLTStd-Roman.otf");
+			}
+		</style>
+		<div class="login">
+			<div>
+				<center>
+					<div class="header">
+						<h2>ME1312.net Uno</h2>
+						<p>ME1312.net Uno Client v1.0a</p>
+						<hr>
+					</div>
+					<br>
+					<form class="login" style="display: none;" enctype="multipart/form-data" onSubmit="return SubDataClient.connect(window.location.hash.substr(1), $(this).children('input')[0].value)">
+						<span class="response"><span style="color: black;">This server requires a password</span></span><br>
+						<br>
+						<input type="password" placeholder="Password"/><button>Join</button>
+						<br>
+						<br>
+						<br>
+					</form>
+					<div class="loading">
+						<div class="buffering" style="width: 128px; height: 128px;"></div>
+						<br>
+						<br>
+					</div>
+				</center>
+			</div>
+		</div>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script>
+			window.onload = function() {
+				if (window.location.hash.length <= 1) {
+					window.location.href = "https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#');
+				} else {
+					SubDataClient.connect(window.location.hash.substr(1), "")
+				}
+			};
+			var SubDataClient = {
+				firstrun: true,
+				connection: null,
+				connect: function(profile, password) {
+					if (SubDataClient.connection == null) {
+						var header = {
+							element: $("body > div.login > div div.header p"),
+							initalValue: $("body > div.login > div div.header p").html()
+						}
+						$($("body > div.login > div form.login").children("input")[0]).prop('disabled', true);
+						$($("body > div.login > div form.login").children("button")[0]).prop('disabled', true);
+						header.element.fadeOut(50, function() {
+							header.element.html("Connecting to " + location.hostname+':'+((location.port)?location.port:'80'));
+							header.element.fadeIn(50);
+						})
+						$("body > div.login > div form.login").fadeOut(150, function() {
+							$($("body > div.login > div form.login").children(".response")[0]).html("");
+							$($($("body > div.login > div form.login").parent()).children(".loading")[0]).fadeIn(150, function() {
+								var connection = new WebSocket("ws://" + location.hostname+':'+((location.port)?location.port:'80') + "/game");
+								connection.onerror = function() {
+									header.element.fadeOut(50, function() {
+										header.element.html(header.initalValue);
+										header.element.fadeIn(50);
+									});
+									$($($("body > div.login > div form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
+										if ($($("body > div.login > div form.login").children(".response")[0]).html().length == 0) $($("body > div.login > div form.login").children(".response")[0]).html((SubDataClient.connection == null)?"Couldn't connect to " + location.hostname+':'+((location.port)?location.port:'80'):"A connection error has occurred");
+										$($("body > div.login > div form.login").children("input")[0]).prop('disabled', false);
+										$($("body > div.login > div form.login").children("button")[0]).prop('disabled', false);
+										SubDataClient.connection = null;
+										$("body > div.login > div form.login").fadeIn(150);
+										$("body > div.login").fadeIn(500);
+									});
+								};
+								connection.onopen = function() {
+									header.element.fadeOut(50, function() {
+										header.element.html("Logging into " + location.hostname+':'+((location.port)?location.port:'80'));
+										$("body > div.login > div form.login").children("input")[0].value = "";
+										header.element.fadeIn(50, function() {
+											setTimeout(function() {
+												SubDataClient.connection = connection;
+												SubDataClient.send(SubDataClient.Protocol.authorization.out(profile, password, function(data) {
+													if (data.r == 0) {
+														window.location.hash = "";
+														while (SubDataClient.queue.length != 0) {
+															connection.send(SubDataClient.queue[0]);
+															SubDataClient.queue.splice(0, 1);
+														}
+														$("body > div.login > div div.header p").fadeOut(50, function() {
+															$("body > div.login > div div.header p").html("Downloading Page Content");
+															$("body > div.login > div div.header p").fadeIn(50, function() {
+																setTimeout(function() {
+																	
+																});
+															});
+														});
+													} else if (data.r == 3) {
+														window.location.href = "https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#');
+														connection.close();
+													} else {
+														$($("body > div.login > div form.login").children(".response")[0]).html((SubDataClient.firstrun)?"<span style=\"color: black;\">This server requires a password</span>":"That was the wrong password");
+														connection.close();
+													}
+													SubDataClient.firstrun = false;
+												}));
+											}, 200);
+										});
+									})
+								};
+								connection.onmessage = function(event) {
+									var json = JSON.parse(event.data);
+									console.log(json);
+									SubDataClient.Protocol[json.h].in(json.c);
+								};
+								connection.onclose = function(event) {
+									header.element.fadeOut(50, function() {
+										header.element.html(header.initalValue);
+										header.element.fadeIn(50);
+									});
+									$($($("body > div.login > div form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
+										if ($($("body > div.login > div form.login").children(".response")[0]).html().length == 0) $($("body > div.login > div form.login").children(".response")[0]).html((event.reason.length == 0)?((SubDataClient.connection == null)?"Couldn't connect to " + location.hostname+':'+((location.port)?location.port:'80'):"A connection error has occurred"):event.reason);
+										$($("body > div.login > div form.login").children("input")[0]).prop('disabled', false);
+										$($("body > div.login > div form.login").children("button")[0]).prop('disabled', false);
+										SubDataClient.connection = null;
+										$("body > div.login > div form.login").fadeIn(150)
+										$("body > div.login").fadeIn(500);
+									});
+								};
+							});
+						});
+					}
+					return false;
+				},
+				queue: [],
+				send: function(data) {
+					if (SubDataClient.connection == null) {
+						SubDataClient.queue.push(JSON.stringify(data));
+					} else {
+						SubDataClient.connection.send(JSON.stringify(data));
+					}
+				},
+				Protocol: {
+					authorization: {
+						callbacks: [],
+						in: function(data) {
+							while (SubDataClient.Protocol.authorization.callbacks.length != 0) {
+								SubDataClient.Protocol.authorization.callbacks[0](data);
+								SubDataClient.Protocol.authorization.callbacks.splice(0, 1);
+							}
+						},
+						out: function(profile, password, callback = null) {
+							if (callback != null) SubDataClient.Protocol.authorization.callbacks.push(callback);
+							return {h:"authorization", v:"1.0a", c:{profile: profile, password: password}};
+						},
+					},
+					playerjoin: {
+						callbacks: [],
+						in: function(data) {
+							while (SubDataClient.Protocol.playerjoin.callbacks.length != 0) {
+								SubDataClient.Protocol.playerjoin.callbacks[0](data);
+								SubDataClient.Protocol.playerjoin.callbacks.splice(0, 1);
+							}
+						}
+					},
+					playerlist: {
+						callbacks: {},
+						in: function(data) {
+							if (SubDataClient.Protocol.playerlist.callbacks[data.id] != null) SubDataClient.Protocol.playerlist.callbacks[data.id](data);
+							delete SubDataClient.Protocol.playerlist.callbacks[data.id];
+						},
+						out: function(callback = null) {
+							var id = randomID(SubDataClient.Protocol.playerlist.callbacks, randomString);
+							SubDataClient.Protocol.playerlist.callbacks[id] = callback;
+						
+							var json = {h:"playerlist", v:"1.0a", c:{id: id}};
+							return json;
+						}
+					}
+				}
+			}
+		</script>
+	</body>
+</html>

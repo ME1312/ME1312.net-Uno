@@ -1,0 +1,8 @@
+Settings:
+  Version: '1.0a+'
+  Starting-Cards: 7
+  Turn-Timeout: 60
+  Game-Rules: []
+  SubData:
+    Address: '0.0.0.0:24392'
+    Password: ''
