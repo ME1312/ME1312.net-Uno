@@ -87,18 +87,20 @@ public enum Card {
     // Special
     W(-1, BLACK, 4, CHANGE_COLOR),
     WD4(-2, BLACK, 4, CHANGE_COLOR, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, SKIP_NEXT),
+    WD8(-3, BLACK, 0, CHANGE_COLOR, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, SKIP_NEXT)
 
     ;
     private static final Random random = new Random();
     private final int number;
     private final CardColor color;
-    private final int amount;
+    private final int defamount;
+    private int amount;
     private int used = 0;
     private final CardAction[] actions;
     Card(int number, CardColor color, int amount, CardAction... actions) {
         this.number = number;
         this.color = color;
-        this.amount = amount;
+        this.amount = (this.defamount = amount);
         this.actions = actions;
     }
 
@@ -110,8 +112,20 @@ public enum Card {
         return color;
     }
 
+    public int getDefaultAmount() {
+        return defamount;
+    }
+
     public int getAmount() {
         return amount;
+    }
+
+    public void setAmount(int value) {
+        amount = value;
+    }
+
+    public void resetAmount() {
+        amount = defamount;
     }
 
     public int getAmountLeft() {

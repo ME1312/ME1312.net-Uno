@@ -139,6 +139,7 @@ public final class SubDataServer {
         registerPacket(PacketOutStartGame.class, "StartGame");
         registerPacket(PacketOutUpdateColor.class, "UpdateColor");
         registerPacket(PacketOutUpdateHand.class, "UpdateHand");
+        registerPacket(PacketOutUpdateStat.class, "UpdateStat");
         registerPacket(PacketPlayCard.class, "PlayCard");
         registerPacket(PacketPlayerList.class, "PlayerList");
         registerPacket(PacketSwapHand.class, "SwapHand");

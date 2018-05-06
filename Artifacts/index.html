@@ -4,12 +4,6 @@
 		<title>ME1312.net Uno</title>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta property="og:site_name" content="ME1312.net">
-		<meta property="og:title" content="ME1312.net Uno">
-		<meta property="og:image" content="https://src.ME1312.net/img/logo.png">
-		<meta property="og:type" content="website">
-		<meta property="og:locale" content="en_US">
-		<meta property="og:description" content="Play Uno on ME1312.net">
 		<link href="//use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet" media="screen">
 	</head>
 	<body>
@@ -241,7 +235,7 @@
 				width: 200px;
 				height: 300px;
 				padding: 6px;
-				padding-bottom: 12px;
+				padding-bottom: 0px;
 				position: relative;
 				align-content: left;
 				text-align: left;
@@ -282,6 +276,7 @@
 				font-size: 12pt;
 				color: #444;
 				line-height: 1em;
+				margin-bottom: 32px;
 			}
 			
 			div.game > div.lobby ul.players > li > div .tag > span {
@@ -301,12 +296,16 @@
 				font-size: 12pt;
 				justify-content: center;
 			}
-			div.game > div.lobby ul.players > li > div .stats > span.wins > i {
+			div.game > div.lobby ul.players > li > div .stats > span.wins > i,
+			div.game > div.lobby ul.players > li > div .stats > span.cardsdrawn > i {
 				font-size: 14pt;
 				color: #f4b93c;
 				margin-right: 4px;
 			}
-			div.game > div.lobby ul.players > li > div .stats > span.cards > div {
+			div.game > div.lobby ul.players > li > div .stats > span.cardsdrawn > i {
+				color: #f4693c;
+			}
+			div.game > div.lobby ul.players > li > div .stats > span.cardsplayed > div {
 				display: inline-block;
 				background-color: #ccc;
 				border-radius: 4px;
@@ -674,6 +673,7 @@
 									<a class="autosort active" title="Auto Sort" href="javascript:void(0)" onclick="toggleAutoSort()" draggable="false"></a>
 									<div class="cards">
 										<span class="group black">
+											<span class="group -3"></span>
 											<span class="group -2"></span>
 											<span class="group -1"></span>
 										</span>
@@ -906,7 +906,7 @@
 						}
 						$('div.game > div.game div.players > div[data-pid=' + players[data.player].profile.id + '] > div.card > span').html(parseInt($('div.game > div.game div.players > div[data-pid=' + players[data.player].profile.id + '] > div.card > span').html()) - 1);
 						players[data.player].stats.cardsPlayed++;
-						$('div.game > div.lobby ul.players > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.cards > span').html(players[data.player].stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+						$('div.game > div.lobby ul.players > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.cardsplayed > span').html(players[data.player].stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 						$('div.game > div.game div.table > div.card').css({
 							"background-image": "url(https://www.me1312.net/uno/assets/" + data.card.number + ".png)",
 							"background-color": cardcolor[data.card.color],
@@ -960,6 +960,25 @@
 					}
 					SubDataClient.Protocol.updatehand.callbacks.push(updatehand);
 					
+					var updatestat = function(data) {
+						switch (data.stat) {
+							case "gamesWon":
+								players[data.player].stats.gamesWon = data.value;
+								$('div.game > div.lobby ul.players > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.wins > span').html(players[data.player].stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+								break;
+							case "cardsPlayed":
+								players[data.player].stats.cardsPlayed = data.value;
+								$('div.game > div.lobby ul.players > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.cardsplayed > span').html(players[data.player].stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+								break;
+							case "consecutiveCardsDrawn":
+								players[data.player].stats.consecutiveCardsDrawn = data.value;
+								$('div.game > div.lobby ul.players > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.cardsdrawn > span').html(players[data.player].stats.consecutiveCardsDrawn.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+								break;
+						}
+						SubDataClient.Protocol.updatestat.callbacks.push(updatestat);
+					}
+					SubDataClient.Protocol.updatestat.callbacks.push(updatestat);
+					
 					var endturn = function() {
 						$('div.game > div.game h1.message.swaphands').remove();
 						$('div.game > div.game div.hand > div > div.cards div.card').removeClass('active');
@@ -1008,7 +1027,7 @@
 			var players = {};
 			function playerJoin(player) {
 				if (!players.hasOwnProperty(player.profile.name)) {
-					$('div.game > div.lobby ul').append('<li data-pid="' + player.profile.id + '"><div><div class="avatar"><div style="background-image: url(' + ((player.profile.image.isDefault)?'https://src.ME1312.net/img/avatar.inverted.svg':((player.profile.image.hasOwnProperty('xlurl')))?player.profile.image.xlurl:player.profile.image.url) + ')"></div></div><span class="name">' + player.profile.displayName + '</span><span class="tag">' + ((player.profile.name == '+' + player.profile.id)?'':'@') + player.profile.name + ((player.profile.name == '+' + player.profile.id)?'':'<span>#' + player.profile.id + '</span>') + '</span><div class="stats"><span class="wins" title="Number of wins"><i class="fas fa-trophy"></i><span>' + player.stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span><span class="cards" title="Number of cards played"><div></div><span>' + player.stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span></div></div>');
+					$('div.game > div.lobby ul').append('<li data-pid="' + player.profile.id + '"><div><div class="avatar"><div style="background-image: url(' + ((player.profile.image.isDefault)?'https://src.ME1312.net/img/avatar.inverted.svg':((player.profile.image.hasOwnProperty('xlurl')))?player.profile.image.xlurl:player.profile.image.url) + ')"></div></div><span class="name">' + player.profile.displayName + '</span><span class="tag">' + ((player.profile.name == '+' + player.profile.id)?'':'@') + player.profile.name + ((player.profile.name == '+' + player.profile.id)?'':'<span>#' + player.profile.id + '</span>') + '</span><div class="stats"><span class="wins" title="Number of wins"><i class="fas fa-trophy"></i><span>' + player.stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span><span class="cardsdrawn" title="Number of cards drawn at once"><i class="fas fa-fire"></i><span>' + player.stats.consecutiveCardsDrawn.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span><span class="cardsplayed" title="Number of cards played"><div></div><span>' + player.stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span></div></div>');
 					players[player.profile.name] = player;
 					console.log(player.profile.displayName + ' (' + ((player.profile.name == '+' + player.profile.id)?'':'@') + player.profile.name + ') has joined');
 				}
@@ -1369,6 +1388,17 @@
 						in: function(data) {
 							var callbacks = SubDataClient.Protocol.updatehand.callbacks;
 							SubDataClient.Protocol.updatehand.callbacks = [];
+							while (callbacks.length != 0) {
+								callbacks[0](data);
+								callbacks.splice(0, 1);
+							}
+						}
+					},
+					updatestat: {
+						callbacks: [],
+						in: function(data) {
+							var callbacks = SubDataClient.Protocol.updatestat.callbacks;
+							SubDataClient.Protocol.updatestat.callbacks = [];
 							while (callbacks.length != 0) {
 								callbacks[0](data);
 								callbacks.splice(0, 1);

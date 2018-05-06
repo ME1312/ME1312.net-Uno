@@ -52,7 +52,7 @@ public class Player implements ClientHandler {
 
     public JSONObject getStats() {
         UniversalFile file = new UniversalFile(server.dir, "Stats:" + profile.getInt("id") +  ".json");
-        JSONObject stats = null;
+        JSONObject stats = new JSONObject();
         if (file.exists()) {
             try {
                 InputStream is = new FileInputStream(file);
@@ -64,11 +64,9 @@ public class Player implements ClientHandler {
             }
         }
 
-        if (stats == null) {
-            stats = new JSONObject();
-            stats.put("cardsPlayed", 0);
-            stats.put("gamesWon", 0);
-        }
+        if (!stats.keySet().contains("cardsPlayed")) stats.put("cardsPlayed", 0);
+        if (!stats.keySet().contains("consecutiveCardsDrawn")) stats.put("consecutiveCardsDrawn", 0);
+        if (!stats.keySet().contains("gamesWon")) stats.put("gamesWon", 0);
 
         return stats;
     }

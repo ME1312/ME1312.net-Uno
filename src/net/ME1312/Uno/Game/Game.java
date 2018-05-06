@@ -22,6 +22,7 @@ public class Game {
     private int currentPlayer = 0;
     private int lastCardNumber;
     private CardColor lastCardColor;
+    private int cardsdrawn = 0;
     private boolean canplay = false;
     private boolean candraw = false;
     private boolean canchangecolor = false;
@@ -36,7 +37,13 @@ public class Game {
         this.initialCardCount = cards;
         this.timeout = timeout;
 
+        Card.WD4.resetAmount();
+        if (rules.contains(GameRule.DRAW_8_CARD)) {
+            Card.WD4.setAmount(Card.WD4.getAmount() - 1);
+            Card.WD8.setAmount(1);
+        } else Card.WD8.resetAmount();
         Card.resetDeck();
+
         for (Player player : players) {
             ArrayList<String> cids = new ArrayList<String>();
             cids.addAll(player.getCards().keySet());
@@ -153,7 +160,7 @@ public class Game {
             (timer = (lastimer = new Timer())).schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (timer == lastimer && player.getSubData() != null) {
+                    if (server.game == Game.this && timer == lastimer && player.getSubData() != null) {
                         player.getSubData().sendPacket(new PacketOutEndTurn());
                         for (Player other : getAllPlayers()) {
                             other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " timed out"));
@@ -180,7 +187,6 @@ public class Game {
                             endTurn();
                         }
                     }
-                    timer = null;
                 }
             }, TimeUnit.SECONDS.toMillis(timeout));
         } else {
@@ -190,6 +196,7 @@ public class Game {
                     if (action ==  CardAction.DRAW_NEXT) {
                         player.addCard(Card.getRandomCard());
                         i++;
+                        cardsdrawn++;
                     }
                 for (Player other : getAllPlayers()) {
                     other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " was forced to draw " + i + " card" + ((i == 1)?"":"s")));
@@ -310,6 +317,7 @@ public class Game {
             candraw = rules.contains(GameRule.PICK_TILL_YOURE_SICK);
             Player player = players.get(currentPlayer);
             player.addCard(Card.getRandomCard());
+            cardsdrawn++;
             LinkedList<String> cards = new LinkedList<String>();
             for (String id : player.getCards().keySet()) {
                 if (player.getCard(id).getNumber() == lastCardNumber || player.getCard(id).getColor() == CardColor.BLACK || player.getCard(id).getColor() == lastCardColor)
@@ -391,6 +399,17 @@ public class Game {
         if (timer != null) {
             timer = null;
         }
+
+        JSONObject stats = players.get(currentPlayer).getStats();
+        if (stats.getInt("consecutiveCardsDrawn") < cardsdrawn) {
+            stats.put("consecutiveCardsDrawn", cardsdrawn);
+            players.get(currentPlayer).setStats(stats);
+            for (Player other : getAllPlayers()) {
+                other.getSubData().sendPacket(new PacketOutUpdateStat(players.get(currentPlayer), "consecutiveCardsDrawn", cardsdrawn));
+            }
+        }
+        cardsdrawn = 0;
+
         if (players.get(currentPlayer).getCards().size() <= 0) {
             stop(players.get(currentPlayer));
         } else {
