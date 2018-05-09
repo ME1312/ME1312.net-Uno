@@ -1,5 +1,6 @@
 package net.ME1312.Uno.Game;
 
+import net.ME1312.Uno.Library.Log.Logger;
 import net.ME1312.Uno.Library.NamedContainer;
 import net.ME1312.Uno.Network.Packet.*;
 import net.ME1312.Uno.UnoServer;
@@ -9,6 +10,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Game {
+    private static Logger log = new Logger("Game");
     private UnoServer server;
     private LinkedList<Player> players;
     private LinkedList<Player> spectators = new LinkedList<Player>();
@@ -42,6 +44,17 @@ public class Game {
             Card.WD4.setAmount(Card.WD4.getAmount() - 1);
             Card.WD8.setAmount(1);
         } else Card.WD8.resetAmount();
+        if (rules.contains(GameRule.MYSTERY_CARD)) {
+            Card.RM.setAmount(1);
+            Card.BM.setAmount(1);
+            Card.GM.setAmount(1);
+            Card.YM.setAmount(1);
+        } else {
+            Card.RM.resetAmount();
+            Card.BM.resetAmount();
+            Card.GM.resetAmount();
+            Card.YM.resetAmount();
+        }
         Card.resetDeck();
 
         for (Player player : players) {
@@ -124,15 +137,23 @@ public class Game {
         canswaphands = false;
         stackmode = false;
         boolean skipped = false;
+        boolean updatehand = false;
+
+        // 1st pass of card actions
         for (CardAction action : pendingActions) {
             boolean stop = false;
             switch (action) {
+                case DISCARD_NEXT:
+                    if (player.getCards().size() > 0) player.removeCard(player.getCards().keySet().toArray(new String[0])[new Random().nextInt(player.getCards().size())]);
+                    if (player.getCards().size() <= 0) skipped = true;
+                    updatehand = true;
+                    break;
                 case DRAW_NEXT:
                     if (rules.contains(GameRule.STACKING)) {
                         candraw = false;
                         stackmode = true;
                         stop = true;
-                    }
+                    } else skipped = true;
                     break;
                 case SKIP_NEXT:
                     skipped = true;
@@ -140,22 +161,35 @@ public class Game {
             }
             if (stop) break;
         }
+        if (updatehand) for (Player other : getAllPlayers()) {
+            other.getSubData().sendPacket(new PacketOutUpdateHand(this, other));
+        }
+
+        // Generate playable card list
         LinkedList<String> cards = new LinkedList<String>();
         for (String id : player.getCards().keySet()) {
             if (stackmode) {
-                if (player.getCard(id).getNumber() == 12 || player.getCard(id) == Card.WD4)
+                if (player.getCard(id).getNumber() == 12 || player.getCard(id) == Card.WD4 || player.getCard(id) == Card.WD8)
                     cards.add(id);
             } else {
                 if (player.getCard(id).getNumber() == lastCardNumber || player.getCard(id).getColor() == CardColor.BLACK || player.getCard(id).getColor() == lastCardColor)
                     cards.add(id);
             }
         }
+        LinkedList<CardAction> tmpactions = new LinkedList<CardAction>();
+        tmpactions.addAll(pendingActions);
         if (!skipped && (candraw || cards.size() > 0)) {
-            if (!stackmode) pendingActions.clear();
+            pendingActions.clear();
+            if (stackmode) for (CardAction action : tmpactions) {
+                if (action == CardAction.DRAW_NEXT) pendingActions.add(CardAction.DRAW_NEXT);
+            }
+
+            // Initialize turn
             if (cards.size() > 0) canplay = true;
             player.getSubData().sendPacket(new PacketOutBeginTurn(player, candraw, cards.toArray(new String[cards.size()])));
             for (Player other : getAllPlayers())
                 if (player != other) other.getSubData().sendPacket(new PacketOutBeginTurn(player));
+
             Timer lastimer;
             (timer = (lastimer = new Timer())).schedule(new TimerTask() {
                 @Override
@@ -190,10 +224,11 @@ public class Game {
                 }
             }, TimeUnit.SECONDS.toMillis(timeout));
         } else {
+            // 2nd pass on card actions
             if (pendingActions.contains(CardAction.DRAW_NEXT)) {
                 int i = 0;
                 for (CardAction action : pendingActions)
-                    if (action ==  CardAction.DRAW_NEXT) {
+                    if (action == CardAction.DRAW_NEXT) {
                         player.addCard(Card.getRandomCard());
                         i++;
                         cardsdrawn++;
@@ -206,7 +241,11 @@ public class Game {
                     other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " got skipped"));
                 }
             }
+            tmpactions.removeFirstOccurrence(CardAction.SKIP_NEXT);
             pendingActions.clear();
+            for (CardAction action : tmpactions) {
+                if (action == CardAction.SKIP_NEXT) pendingActions.add(CardAction.SKIP_NEXT);
+            }
             endTurn();
         }
     }
@@ -217,7 +256,7 @@ public class Game {
             boolean canplay = false;
             if (player.getCards().keySet().contains(id)) {
                 if (stackmode) {
-                    if (player.getCard(id).getNumber() == 12 || player.getCard(id) == Card.WD4)
+                    if (player.getCard(id).getNumber() == 12 || player.getCard(id) == Card.WD4 || player.getCard(id) == Card.WD8)
                         canplay = true;
                 } else {
                     if (player.getCard(id).getNumber() == lastCardNumber || player.getCard(id).getColor() == CardColor.BLACK || player.getCard(id).getColor() == lastCardColor)
@@ -229,6 +268,25 @@ public class Game {
                 lastCardNumber = card.getNumber();
                 lastCardColor = card.getColor();
                 pendingActions.addAll(card.getActions());
+                if (card.getNumber() == 13) {
+                    Random random = new Random();
+                    int i = random.nextInt(9);
+                    while (i > 0) {
+                        boolean enabled = true;
+                        CardAction action = CardAction.values()[random.nextInt(CardAction.values().length)];
+                        if ((action == CardAction.SWAP_HANDS || action == CardAction.SWAP_HANDS_ALL) && !rules.contains(GameRule.SWAPPING)) enabled = false;
+                        if (pendingActions.contains(action) && !action.isRepeatable()) enabled = false;
+
+                        if (enabled) {
+                            pendingActions.add(action);
+                            i--;
+                        }
+                    }
+                    log.info.println("Random CardAction Applied: " + pendingActions.toString());
+                    for (Player other : getAllPlayers()) {
+                        other.getSubData().sendPacket(new PacketOutAlert("The mystery card has spoken"));
+                    }
+                }
                 player.removeCard(id);
 
                 JSONObject stats = player.getStats();
@@ -239,19 +297,6 @@ public class Game {
                     other.getSubData().sendPacket(new PacketPlayCard(player, id, card));
                 }
 
-                boolean pause = false;
-
-                if (pendingActions.contains(CardAction.REVERSE)) {
-                    direction *= -1;
-                    if (players.size() <= 2) {
-                        pendingActions.add(CardAction.SKIP_NEXT);
-                    } else {
-                        for (Player other : getAllPlayers()) {
-                            other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " reversed it"));
-                        }
-                    }
-                    pendingActions.remove(CardAction.REVERSE);
-                }
                 if (player.getCards().size() > 0) {
                     if (card.getColor() == CardColor.BLACK || pendingActions.contains(CardAction.CHANGE_COLOR)) {
                         if (rules.contains(GameRule.SPIN_THAT_WHEEL)) {
@@ -262,50 +307,19 @@ public class Game {
                             }
                         } else {
                             canchangecolor = true;
-                            pause = true;
                             pendingActions.remove(CardAction.CHANGE_COLOR);
                             player.getSubData().sendPacket(new PacketChangeColor(server));
                         }
                     }
                     if (rules.contains(GameRule.SWAPPING)) {
-                        if (pendingActions.contains(CardAction.SWAP_HANDS_ALL)) {
-                            pendingActions.remove(CardAction.SWAP_HANDS_ALL);
-                            LinkedList<Player> players = new LinkedList<Player>();
-                            players.addAll(this.players);
-                            if (direction > 0) Collections.reverse(players);
-
-                            LinkedHashMap<String, Card> limbo = new LinkedHashMap<String, Card>();
-                            boolean limbuno = false;
-                            Player last = null;
-                            for (int i = 0; i < players.size(); i++) {
-                                if (i == 0) {
-                                    limbuno = players.get(i).uno;
-                                    limbo = players.get(i).cards;
-                                } else {
-                                    last.uno = players.get(i).uno;
-                                    last.cards = players.get(i).cards;
-                                }
-                                last = players.get(i);
-                                if (i >= players.size() - 1) {
-                                    players.get(i).uno = limbuno;
-                                    players.get(i).cards = limbo;
-                                }
-                            }
-
-                            for (Player other : getAllPlayers()) {
-                                other.getSubData().sendPacket(new PacketOutAlert("Everyone swapped hands"));
-                                other.getSubData().sendPacket(new PacketOutUpdateHand(this, other));
-                            }
-                        } else if (pendingActions.contains(CardAction.SWAP_HANDS)) {
+                        if (pendingActions.contains(CardAction.SWAP_HANDS)) {
                             pendingActions.remove(CardAction.SWAP_HANDS);
                             canswaphands = true;
-                            pause = true;
                             player.getSubData().sendPacket(new PacketSwapHand(server));
                         }
                     }
                 }
-
-                if (!pause) {
+                if (!canchangecolor && !canswaphands) {
                     endTurn();
                 }
             }
@@ -341,7 +355,8 @@ public class Game {
             for (Player player : getAllPlayers()) {
                 player.getSubData().sendPacket(new PacketOutUpdateColor(color));
             }
-            endTurn();
+            canchangecolor = false;
+            if (!canswaphands) endTurn();
         }
     }
 
@@ -359,7 +374,8 @@ public class Game {
                 other.getSubData().sendPacket(new PacketOutAlert(from.getProfile().getString("displayName") + " swapped hands with " + to.getProfile().getString("displayName")));
                 other.getSubData().sendPacket(new PacketOutUpdateHand(this, other));
             }
-            endTurn();
+            canswaphands = false;
+            if (!canchangecolor) endTurn();
         }
     }
 
@@ -373,7 +389,7 @@ public class Game {
                         LinkedList<String> cards = new LinkedList<String>();
                         for (String id : to.getCards().keySet()) {
                             if (stackmode) {
-                                if (to.getCard(id).getNumber() == 12 || to.getCard(id) == Card.WD4)
+                                if (to.getCard(id).getNumber() == 12 || to.getCard(id) == Card.WD4 || to.getCard(id) == Card.WD8)
                                     cards.add(id);
                             } else {
                                 if (to.getCard(id).getNumber() == lastCardNumber || to.getCard(id).getColor() == CardColor.BLACK || to.getCard(id).getColor() == lastCardColor)
@@ -396,22 +412,104 @@ public class Game {
     }
 
     public void endTurn() {
+        Player player = players.get(currentPlayer);
         if (timer != null) {
             timer = null;
         }
 
-        JSONObject stats = players.get(currentPlayer).getStats();
+        boolean updatehand = false;
+        Random random = new Random();
+        LinkedList<CardAction> tmpactions = new LinkedList<CardAction>();
+        tmpactions.addAll(pendingActions);
+        for (CardAction action : tmpactions) {
+            if (action == CardAction.REVERSE) {
+                direction *= -1;
+                if (players.size() <= 2) {
+                    pendingActions.add(CardAction.SKIP_NEXT);
+                } else {
+                    for (Player other : getAllPlayers()) {
+                        other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " reversed it"));
+                    }
+                }
+                pendingActions.removeFirstOccurrence(CardAction.REVERSE);
+            }
+            if (action == CardAction.DRAW) {
+                player.addCard(Card.getRandomCard());
+                cardsdrawn++;
+            }
+            if (action == CardAction.DRAW_ALL) {
+                for (Player other : players) {
+                    player.addCard(Card.getRandomCard());
+                }
+                cardsdrawn++;
+            }
+            if (action == CardAction.DISCARD) {
+                if (player.getCards().size() > 0) player.removeCard(player.getCards().keySet().toArray(new String[0])[random.nextInt(player.getCards().size())]);
+                updatehand = true;
+            }
+            if (action == CardAction.DISCARD_ALL) {
+                for (Player other : players) {
+                    if (other.getCards().size() > 0) other.removeCard(other.getCards().keySet().toArray(new String[0])[random.nextInt(other.getCards().size())]);
+                }
+                updatehand = true;
+            }
+
+            if (player.getCards().size() > 0) {
+                if (rules.contains(GameRule.SWAPPING)) {
+                    if (pendingActions.contains(CardAction.SWAP_HANDS_ALL)) {
+                        pendingActions.removeFirstOccurrence(CardAction.SWAP_HANDS_ALL);
+                        LinkedList<Player> players = new LinkedList<Player>();
+                        players.addAll(this.players);
+                        if (direction > 0) Collections.reverse(players);
+
+                        LinkedHashMap<String, Card> limbo = new LinkedHashMap<String, Card>();
+                        boolean limbuno = false;
+                        Player last = null;
+                        for (int i = 0; i < players.size(); i++) {
+                            if (i == 0) {
+                                limbuno = players.get(i).uno;
+                                limbo = players.get(i).cards;
+                            } else {
+                                last.uno = players.get(i).uno;
+                                last.cards = players.get(i).cards;
+                            }
+                            last = players.get(i);
+                            if (i >= players.size() - 1) {
+                                players.get(i).uno = limbuno;
+                                players.get(i).cards = limbo;
+                            }
+                        }
+
+                        for (Player other : getAllPlayers()) {
+                            other.getSubData().sendPacket(new PacketOutAlert("Everyone swapped hands"));
+                        }
+                        updatehand = true;
+                    }
+                }
+            }
+        }
+        if (updatehand) for (Player other : getAllPlayers()) {
+            other.getSubData().sendPacket(new PacketOutUpdateHand(this, other));
+        }
+
+        JSONObject stats = player.getStats();
         if (stats.getInt("consecutiveCardsDrawn") < cardsdrawn) {
             stats.put("consecutiveCardsDrawn", cardsdrawn);
-            players.get(currentPlayer).setStats(stats);
+            player.setStats(stats);
             for (Player other : getAllPlayers()) {
-                other.getSubData().sendPacket(new PacketOutUpdateStat(players.get(currentPlayer), "consecutiveCardsDrawn", cardsdrawn));
+                other.getSubData().sendPacket(new PacketOutUpdateStat(player, "consecutiveCardsDrawn", cardsdrawn));
             }
         }
         cardsdrawn = 0;
 
-        if (players.get(currentPlayer).getCards().size() <= 0) {
-            stop(players.get(currentPlayer));
+        Player winner = null;
+
+        for (Player other : players) {
+            if (other.getCards().size() <= 0) winner = other;
+        }
+
+        if (winner != null) {
+            stop(winner);
         } else {
             currentPlayer += direction;
             if (currentPlayer < 0 || currentPlayer >= players.size()) {
@@ -435,7 +533,7 @@ public class Game {
             other.getSubData().sendPacket(new PacketOutEndGame(winner));
             other.setPlaying(false);
         }
-        server.log.info.println((winner == null)?"Uno has been stopped":winner.getProfile().getString("displayName") + " won Uno");
+        log.info.println((winner == null)?"Uno has been stopped":winner.getProfile().getString("displayName") + " won Uno");
         if (winner != null) {
             players.remove(winner);
             JSONObject stats = winner.getStats();

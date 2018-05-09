@@ -27,7 +27,8 @@ public enum Card {
     // Red Special
     RR(10, RED, 2, REVERSE),
     RS(11, RED, 2, SKIP_NEXT),
-    RD2(12, RED, 2, DRAW_NEXT, DRAW_NEXT, SKIP_NEXT),
+    RD2(12, RED, 2, DRAW_NEXT, DRAW_NEXT),
+    RM(13, RED, 0),
 
 
     // Green 0-9
@@ -45,7 +46,8 @@ public enum Card {
     // Green Special
     GR(10, GREEN, 2, REVERSE),
     GS(11, GREEN, 2, SKIP_NEXT),
-    GD2(12, GREEN, 2, DRAW_NEXT, DRAW_NEXT, SKIP_NEXT),
+    GD2(12, GREEN, 2, DRAW_NEXT, DRAW_NEXT),
+    GM(13, GREEN, 0),
 
 
     // Blue 0-9
@@ -63,7 +65,8 @@ public enum Card {
     // Blue Special
     BR(10, BLUE, 2, REVERSE),
     BS(11, BLUE, 2, SKIP_NEXT),
-    BD2(12, BLUE, 2, DRAW_NEXT, DRAW_NEXT, SKIP_NEXT),
+    BD2(12, BLUE, 2, DRAW_NEXT, DRAW_NEXT),
+    BM(13, BLUE, 0),
 
 
     // Yellow 0-9
@@ -81,13 +84,14 @@ public enum Card {
     // Yellow Special
     YR(10, YELLOW, 2, REVERSE),
     YS(11, YELLOW, 2, SKIP_NEXT),
-    YD2(12, YELLOW, 2, DRAW_NEXT, DRAW_NEXT, SKIP_NEXT),
+    YD2(12, YELLOW, 2, DRAW_NEXT, DRAW_NEXT),
+    YM(13, YELLOW, 0),
 
 
     // Special
     W(-1, BLACK, 4, CHANGE_COLOR),
-    WD4(-2, BLACK, 4, CHANGE_COLOR, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, SKIP_NEXT),
-    WD8(-3, BLACK, 0, CHANGE_COLOR, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, SKIP_NEXT)
+    WD4(-2, BLACK, 4, CHANGE_COLOR, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT),
+    WD8(-3, BLACK, 0, CHANGE_COLOR, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT)
 
     ;
     private static final Random random = new Random();

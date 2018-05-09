@@ -233,7 +233,7 @@
 				background-color: #EEE;
 				border-radius: 30px;
 				width: 200px;
-				height: 300px;
+				min-height: 300px;
 				padding: 6px;
 				padding-bottom: 0px;
 				position: relative;
@@ -678,6 +678,7 @@
 											<span class="group -1"></span>
 										</span>
 										<span class="group red">
+											<span class="group 13"></span>
 											<span class="group 12"></span>
 											<span class="group 11"></span>
 											<span class="group 10"></span>
@@ -693,6 +694,7 @@
 											<span class="group 0"></span>
 										</span>
 										<span class="group blue">
+											<span class="group 13"></span>
 											<span class="group 12"></span>
 											<span class="group 11"></span>
 											<span class="group 10"></span>
@@ -708,6 +710,7 @@
 											<span class="group 0"></span>
 										</span>
 										<span class="group green">
+											<span class="group 13"></span>
 											<span class="group 12"></span>
 											<span class="group 11"></span>
 											<span class="group 10"></span>
@@ -723,6 +726,7 @@
 											<span class="group 0"></span>
 										</span>
 										<span class="group yellow">
+											<span class="group 13"></span>
 											<span class="group 12"></span>
 											<span class="group 11"></span>
 											<span class="group 10"></span>
@@ -1459,7 +1463,8 @@
 			}
 			return obj;
 		}
-		function randomString(length = 64) {
+		function randomString(length) {
+			if (length == null) length = 64;
 			var text = "";
     		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 

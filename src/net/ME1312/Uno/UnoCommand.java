@@ -1,11 +1,13 @@
 package net.ME1312.Uno;
 
+import net.ME1312.Uno.Game.Card;
 import net.ME1312.Uno.Game.Game;
 import net.ME1312.Uno.Game.GameRule;
 import net.ME1312.Uno.Game.Player;
 import net.ME1312.Uno.Library.Command;
 import net.ME1312.Uno.Library.Util;
 import net.ME1312.Uno.Network.Packet.PacketOutAlert;
+import net.ME1312.Uno.Network.Packet.PacketOutUpdateHand;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -135,6 +137,65 @@ public class UnoCommand {
                 }
             }
         }.description("Toggles game rules").usage("[rule]").help(help.toArray(new String[help.size()])).register("gamerule", "rule");
+        help = new LinkedList<String>();
+        help.add("This command will set a player's deck using the");
+        help.add("card types supplied as arguments.");
+        help.add("");
+        help.add("Currently, the following card types are available:");
+        for (Card card : Card.values()) {
+            help.add("  - " + card.toString());
+        }
+        help.add("");
+        help.add("Examples:");
+        help.add("  /rig ME1312 WD8");
+        help.add("  /rig ME1312 WD8 WD4");
+        new Command() {
+            @Override
+            public void command(String handle, String[] args) {
+                if (args.length > 1) {
+                    if (server.game != null) {
+                        Player player;
+                        if (!server.hasPlayer(args[0])) {
+                            server.log.message.println("There is no player with that tag");
+                        } else if (!server.game.getPlayers().contains(player = server.getPlayer(args[0]))) {
+                            server.log.message.println("That player is not playing Uno");
+                        } else {
+                            try {
+                                player.setPlaying(false);
+                                ArrayList<String> cids = new ArrayList<String>();
+                                cids.addAll(player.getCards().keySet());
+                                for (String id : cids) {
+                                    player.removeCard(id);
+                                }
+                                LinkedList<String> cards = new LinkedList<String>();
+                                cards.addAll(Arrays.asList(args));
+                                cards.remove(0);
+                                for (String card : cards) {
+                                    card = card.replace(' ', '_').replaceAll("[^A-Za-z0-9_]", "").toUpperCase();
+                                    try {
+                                        player.addCard(Card.valueOf(card));
+                                    } catch (Exception e) {
+                                        server.log.error.println(new InvocationTargetException(e, "Could not find card: " + card));
+                                    }
+                                }
+                                if (player.getCards().size() <= 0) player.addCard(Card.YM);
+                                player.setPlaying(true);
+                                for (Player other : server.game.getAllPlayers()) {
+                                    other.getSubData().sendPacket(new PacketOutUpdateHand(server.game, other));
+                                }
+                                server.game.beginTurn();
+                            } catch (Exception e) {
+                                server.log.error.println(e);
+                            }
+                        }
+                    } else {
+                        server.log.message.println("There is no Uno game running at the moment");
+                    }
+                }else {
+                    server.log.message.println("Usage: /" + handle + " <player> <cards...>");
+                }
+            }
+        }.description("Sets a players deck").usage("<player>", "<cards...>").help(help.toArray(new String[help.size()])).register("stack", "rig");
         new Command() {
             @Override
             public void command(String handle, String[] args) {

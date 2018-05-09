@@ -157,6 +157,18 @@ public final class UnoServer {
         return instance;
     }
 
+    public Player getPlayer(String name) {
+        HashMap<String, String> insensitive = new HashMap<String, String>();
+        for (String value : players.keySet()) insensitive.put(value.toLowerCase(), value);
+        return players.get(insensitive.get(name.toLowerCase()));
+    }
+
+    public boolean hasPlayer(String name) {
+        HashMap<String, String> insensitive = new HashMap<String, String>();
+        for (String value : players.keySet()) insensitive.put(value.toLowerCase(), value);
+        return insensitive.keySet().contains(name.toLowerCase());
+    }
+
     /**
      * Stop Uno
      *

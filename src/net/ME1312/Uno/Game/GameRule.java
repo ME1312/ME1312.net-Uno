@@ -6,5 +6,6 @@ public enum GameRule {
     SPIN_THAT_WHEEL,
     PICK_TILL_YOURE_SICK,
     DRAW_8_CARD,
+    MYSTERY_CARD,
     NO_CALLOUT,
 }
