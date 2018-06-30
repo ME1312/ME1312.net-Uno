@@ -40,7 +40,7 @@ public class Player implements ClientHandler {
             if (server.game != null) server.game.quit(this);
             server.players.remove(profile.getString("name"));
             for (Client other : server.subdata.getClients())
-                if (this.client != other && other.isAuthorized()) other.sendPacket(new PacketOutPlayerQuit(profile.getString("name")));
+                if (this.client != other && !other.isClosed() && other.isAuthorized()) other.sendPacket(new PacketOutPlayerQuit(profile.getString("name")));
         }
         this.client = client;
         if (client != null && (client.getHandler() == null || !equals(client.getHandler()))) client.setHandler(this);
@@ -51,7 +51,7 @@ public class Player implements ClientHandler {
     }
 
     public JSONObject getStats() {
-        UniversalFile file = new UniversalFile(server.dir, "Stats:" + profile.getInt("id") +  ".json");
+        UniversalFile file = new UniversalFile(server.dir, "Stats:" + profile.getLong("id") +  ".json");
         JSONObject stats = new JSONObject();
         if (file.exists()) {
             try {
@@ -74,7 +74,7 @@ public class Player implements ClientHandler {
     public void setStats(JSONObject stats) {
         File parent = new File(server.dir, "Stats");
         if (parent.exists() || parent.mkdirs()) {
-            File file = new File(parent, profile.getInt("id") + ".json");
+            File file = new File(parent, profile.getLong("id") + ".json");
             try {
                 FileWriter writer = new FileWriter(file, false);
                 stats.write(writer);
@@ -87,6 +87,7 @@ public class Player implements ClientHandler {
 
     public void uno() {
         uno = true;
+        Game.log.info.println(profile.getString("displayName") + " called Uno");
         if (server.game != null && isPlaying()) for (Player player : server.game.getPlayers()) {
             player.getSubData().sendPacket(new PacketOutAlert(profile.getString("displayName") + " called Uno"));
         }

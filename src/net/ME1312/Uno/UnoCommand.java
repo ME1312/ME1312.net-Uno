@@ -9,6 +9,7 @@ import net.ME1312.Uno.Library.Util;
 import net.ME1312.Uno.Network.Packet.PacketOutAlert;
 import net.ME1312.Uno.Network.Packet.PacketOutUpdateHand;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -26,7 +27,7 @@ public class UnoCommand {
                         "Java " + System.getProperty("java.version") + ',',
                         "Uno v" + server.version.toExtendedString());
             }
-        }.usage("[plugin]").description("Gets the version of the System and Uno or the specified Plugin").help(
+        }.description("Gets the version of the game server").help(
                 "This command will print what OS you're running, your OS version,",
                 "your Java version, and the Uno version.",
                 "",
@@ -36,13 +37,85 @@ public class UnoCommand {
         new Command() {
             @Override
             public void command(String handle, String[] args) {
+                server.log.message.println("There are " + server.players.size() + " player" + ((server.players.size() == 1)?"":"s") + " online" + ((server.players.size() > 0)?":":""));
+                for (Player player : server.players.values()) {
+                    String s = player.getProfile().getString("displayName") + " (";
+                    if (player.getProfile().getString("name").equals("+" + player.getProfile().getLong("id"))) {
+                        s += player.getProfile().getString("name");
+                    } else {
+                        s += '@' + player.getProfile().getString("name") + '#' + Long.toString(player.getProfile().getLong("id"), 36).toUpperCase();
+                    }
+                    s += ')';
+                    server.log.message.println("  - " + s);
+                }
+            }
+        }.description("Get the player list").help(
+                "This command will print a list of all the players",
+                "logged into this server.",
+                "",
+                "Example:",
+                "  /list"
+        ).register("list");
+        new Command() {
+            @Override
+            public void command(String handle, String[] args) {
+                if (args.length > 0) {
+                    String str = args[0];
+                    for (int i = 1; i < args.length; i++) {
+                        str += "_" + args[i];
+                    }
+                    server.config.get().getSection("Settings").getSection("SubData").set("Password", str);
+                    server.log.message.println("The server's password has been updated");
+                } else {
+                    server.config.get().getSection("Settings").getSection("SubData").set("Password", "");
+                    server.log.message.println("The server's password has been disabled");
+                }
+            }
+        }.description("Change the server password").usage("[password]").help(
+                "This command will change the password that",
+                "players use to login to the server with.",
+                "",
+                "If no arguments are supplied,",
+                "the server password will be disabled.",
+                "",
+                "Example:",
+                "  /password VerySecure").register("password");
+        new Command() {
+            @Override
+            public void command(String handle, String[] args) {
+                if (args.length > 0) {
+                    Player player;
+                    if ((player = server.getPlayer(args[0])) == null) {
+                        server.log.message.println("There is no player with that tag");
+                    } else {
+                        if (player.getSubData() == null) {
+                            server.players.remove(player.getProfile().getString("name"));
+                        } else try {
+                            player.getSubData().disconnect();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        server.log.message.println(player.getProfile().getString("displayName") + " has been kicked");
+                    }
+                } else {
+                    server.log.message.println("Usage: /" + handle + " <player>");
+                }
+            }
+        }.description("Kick a player").usage("<player>").help(
+                "This command will kick the specified player",
+                "from this server.",
+                "",
+                "Example:",
+                "  /kick ME1312").register("kick");
+        new Command() {
+            @Override
+            public void command(String handle, String[] args) {
                 if (server.players.size() >= 2) {
                     boolean restart = false;
                     if (server.game != null) {
                         server.game.stop();
                         restart = true;
                     }
-                    server.log.info.println(((restart)?"Res":"S") + "tarting Uno...");
                     LinkedList<Player> players = new LinkedList<Player>();
                     players.addAll(server.players.values());
                     LinkedList<GameRule> rules = new LinkedList<GameRule>();
@@ -58,7 +131,7 @@ public class UnoCommand {
                 }
             }
         }.description("Starts the game").help(
-                "This command will start a game of Uno.",
+                "This command will start the game.",
                 "",
                 "Example:",
                 "  /start"
@@ -70,7 +143,6 @@ public class UnoCommand {
                     server.game = server.lastGame;
                     server.lastGame = null;
                     if (server.game.start()) {
-                        server.log.info.println("Continuing the previous Uno game...");
                         for (Player player : server.players.values()) {
                             if (!server.game.getPlayers().contains(player)) {
                                 server.game.addSpectator(player);
@@ -78,21 +150,23 @@ public class UnoCommand {
                             }
                         }
                     } else {
-                        server.log.info.println("The previous uno game can not be continued");
+                        server.log.message.println("The previous uno game cannot be continued");
                     }
                 } else {
                     server.log.message.println("An uno game has not yet been finished");
                 }
             }
         }.description("Continues a finished game").help(
-                "This command will continue the previous game of Uno.",
+                "This command will continue the previous game.",
                 "",
                 "Example:",
                 "  /continue"
         ).register("continue");
+        int hi = 0;
+        String hs = "";
         LinkedList<String> help = new LinkedList<String>();
         help.add("This command toggles whether or not a rule is activated,");
-        help.add("for the next game of Uno.");
+        help.add("to be used in the next game.");
         help.add("");
         help.add("If no arguments are supplied, it will instead print");
         help.add("a list of what rules are enabled.");
@@ -100,6 +174,7 @@ public class UnoCommand {
         help.add("Currently, the following rules are available:");
         for (GameRule rule : GameRule.values()) {
             help.add("  - " + rule.toString());
+            hi++;
         }
         help.add("");
         help.add("Examples:");
@@ -137,14 +212,22 @@ public class UnoCommand {
                 }
             }
         }.description("Toggles game rules").usage("[rule]").help(help.toArray(new String[help.size()])).register("gamerule", "rule");
+        hi = 0;
+        hs = "  ";
         help = new LinkedList<String>();
         help.add("This command will set a player's deck using the");
         help.add("card types supplied as arguments.");
         help.add("");
         help.add("Currently, the following card types are available:");
         for (Card card : Card.values()) {
-            help.add("  - " + card.toString());
+            hs += card;
+            hi++;
+            if (hi != Card.values().length) {
+                hs += ", ";
+                if (hi % 14 == 0) hs += "\n  ";
+            }
         }
+        help.addAll(Arrays.asList(hs.split("\\n")));
         help.add("");
         help.add("Examples:");
         help.add("  /rig ME1312 WD8");
@@ -155,9 +238,9 @@ public class UnoCommand {
                 if (args.length > 1) {
                     if (server.game != null) {
                         Player player;
-                        if (!server.hasPlayer(args[0])) {
+                        if ((player = server.getPlayer(args[0])) == null) {
                             server.log.message.println("There is no player with that tag");
-                        } else if (!server.game.getPlayers().contains(player = server.getPlayer(args[0]))) {
+                        } else if (!server.game.getPlayers().contains(player)) {
                             server.log.message.println("That player is not playing Uno");
                         } else {
                             try {
@@ -184,6 +267,7 @@ public class UnoCommand {
                                     other.getSubData().sendPacket(new PacketOutUpdateHand(server.game, other));
                                 }
                                 server.game.beginTurn();
+                                server.log.message.println(player.getProfile().getString("displayName") + '\'' + ((player.getProfile().getString("displayName").toLowerCase().endsWith("s"))?"":"s") +  " hand has been updated");
                             } catch (Exception e) {
                                 server.log.error.println(e);
                             }
@@ -206,7 +290,7 @@ public class UnoCommand {
                 }
             }
         }.description("Stops the game").help(
-                "This command will stop a currently running Uno game.",
+                "This command will stop the game.",
                 "",
                 "Example:",
                 "  /stop"
@@ -282,8 +366,8 @@ public class UnoCommand {
             public void command(String handle, String[] args) {
                 server.stop(0);
             }
-        }.description("Stops this Uno instance").help(
-                "This command will shutdown this instance of UnoServer.",
+        }.description("Stops the server").help(
+                "This command will shutdown the server.",
                 "",
                 "Example:",
                 "  /exit"

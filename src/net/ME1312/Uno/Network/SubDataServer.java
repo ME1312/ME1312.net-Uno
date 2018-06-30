@@ -207,7 +207,9 @@ public final class SubDataServer {
      * @return Client List
      */
     public Collection<Client> getClients() {
-        return clients.values();
+        ArrayList<Client> clients = new ArrayList<Client>();
+        clients.addAll(this.clients.values());
+        return clients;
     }
 
     /**

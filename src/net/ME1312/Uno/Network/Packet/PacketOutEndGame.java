@@ -5,19 +5,25 @@ import net.ME1312.Uno.Library.Config.YAMLSection;
 import net.ME1312.Uno.Library.Version.Version;
 import net.ME1312.Uno.Network.PacketOut;
 
+import java.util.ArrayList;
+
 public class PacketOutEndGame implements PacketOut {
-    private Player player;
+    private Player[] players;
     private boolean draw;
     private String[] cards;
 
-    public PacketOutEndGame(Player player) {
-        this.player = player;
+    public PacketOutEndGame(Player... players) {
+        this.players = players;
     }
 
     @Override
     public YAMLSection generate() throws Throwable {
         YAMLSection info = new YAMLSection();
-        if (player != null) info.set("winner", player.getProfile().getString("name"));
+        if (players.length > 0) {
+            ArrayList<String> names = new ArrayList<String>();
+            for (Player player : players) names.add(player.getProfile().getString("name"));
+            info.set("winner", names);
+        }
         return info;
     }
 

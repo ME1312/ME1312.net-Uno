@@ -1,20 +1,20 @@
 package net.ME1312.Uno.Game;
 
 public enum CardAction {
-    DRAW(true),
-    DRAW_NEXT(true),
-    DRAW_ALL(true),
-    DISCARD(true),
-    DISCARD_NEXT(true),
-    DISCARD_ALL(true),
-    SKIP_NEXT(true),
-    REVERSE(true),
-    SWAP_HANDS,
-    SWAP_HANDS_ALL(true),
-    CHANGE_COLOR,
+    DRAW,
+    DRAW_NEXT,
+    DRAW_ALL,
+    DISCARD,
+    DISCARD_NEXT,
+    DISCARD_ALL,
+    SKIP_NEXT,
+    REVERSE,
+    SWAP_HANDS(false),
+    SWAP_HANDS_ALL,
+    CHANGE_COLOR(false),
 
     ;
-    private boolean repeatable = false;
+    private boolean repeatable = true;
     CardAction() {}
     CardAction(boolean repeatable) {
         this.repeatable = repeatable;

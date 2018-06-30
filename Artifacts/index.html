@@ -53,6 +53,7 @@
 				flex-grow: 1;
 				flex-shrink: 0;
 			}
+			div.preload,
 			div.login,
 			div.game,
 			div.game > div.winner {
@@ -71,6 +72,10 @@
 				z-index: 1;
 				background-color: #e12e2e;
 				overflow: hidden;
+			}
+			div.preload {
+				z-index: -1;
+				overflow: visible;
 			}
 			div.login > div {
 				position: fixed;
@@ -210,47 +215,53 @@
 				max-width: 350px;
 				max-height: 200px;
 			}
-			div.game > div.lobby ul.players {
-				display: flex;
+			div.game > div.lobby div.players {
 				background-color: rgba(0,0,0,.15);
-				padding: 10px 0px;
-				padding-top: 30px;
+				padding: 15px 0px;
 				margin: 0px;
 				position: absolute;
 				top: 205px;
 				bottom: 0;
 				left: 0;
 				right: 0;
-				overflow-x: auto;
+				overflow: auto;
 			}
-			div.game > div.lobby ul.players > li {
+			div.game > div.lobby div.players > ul {
+				display: flex;
+				min-height: 320px;
+				max-height: 100%;
+				margin: 0px;
+				padding: 0px;
+				position: relative;
+			}
+			div.game > div.lobby div.players > ul > li {
 				display: inline-block;
-				padding: 5px;
+				padding: 0px 5px;
 				flex-grow: 1;
 			}
-			div.game > div.lobby ul.players > li > div {
+			div.game > div.lobby div.players > ul > li > div {
 				display: inline-block;
 				background-color: #EEE;
 				border-radius: 30px;
 				width: 200px;
-				min-height: 300px;
-				padding: 6px;
-				padding-bottom: 0px;
+				min-height: 100%;
+				padding: 0px 6px;
 				position: relative;
 				align-content: left;
 				text-align: left;
 			}
 			
-			div.game > div.lobby ul.players > li > div .avatar {
+			div.game > div.lobby div.players > ul > li > div .avatar {
 				border-radius: 130px;
 				background-color: #222;
+				margin-top: 6px;
 				position: relative;
 				top: -2px;
 				width: 196px;
 				padding: 2px;
 			}
 			
-			div.game > div.lobby ul.players > li > div .avatar > div {
+			div.game > div.lobby div.players > ul > li > div .avatar > div {
 				border-radius: 128px;
 				background: transparent no-repeat;
 				background-size: contain;
@@ -258,7 +269,7 @@
 				padding-top: 100%;
 			}
 			
-			div.game > div.lobby ul.players > li > div .name {
+			div.game > div.lobby div.players > ul > li > div .name {
 				display: block;
 				font-size: 20pt;
 				font-weight: bolder;
@@ -266,11 +277,11 @@
 				word-break: break-all;
 			}
 			
-			div.game > div.lobby ul.players > li > div .name > a {
+			div.game > div.lobby div.players > ul > li > div .name > a {
 				color: #000;
 			}
 			
-			div.game > div.lobby ul.players > li > div .tag {
+			div.game > div.lobby div.players > ul > li > div .tag {
 				display: block;
 				padding-top: 4px;
 				font-size: 12pt;
@@ -279,11 +290,11 @@
 				margin-bottom: 32px;
 			}
 			
-			div.game > div.lobby ul.players > li > div .tag > span {
+			div.game > div.lobby div.players > ul > li > div .tag > span {
 				font-size: 9pt;
 				color: #888;
 			}
-			div.game > div.lobby ul.players > li > div .stats {
+			div.game > div.lobby div.players > ul > li > div .stats {
 				display: flex;
 				position: absolute;
 				left: 0;
@@ -291,21 +302,21 @@
 				bottom: 6px;
 				justify-content: space-evenly;
 			}
-			div.game > div.lobby ul.players > li > div .stats > span {
+			div.game > div.lobby div.players > ul > li > div .stats > span {
 				display: inline-flex;
 				font-size: 12pt;
 				justify-content: center;
 			}
-			div.game > div.lobby ul.players > li > div .stats > span.wins > i,
-			div.game > div.lobby ul.players > li > div .stats > span.cardsdrawn > i {
+			div.game > div.lobby div.players > ul > li > div .stats > span.wins > i,
+			div.game > div.lobby div.players > ul > li > div .stats > span.cardsdrawn > i {
 				font-size: 14pt;
 				color: #f4b93c;
 				margin-right: 4px;
 			}
-			div.game > div.lobby ul.players > li > div .stats > span.cardsdrawn > i {
+			div.game > div.lobby div.players > ul > li > div .stats > span.cardsdrawn > i {
 				color: #f4693c;
 			}
-			div.game > div.lobby ul.players > li > div .stats > span.cardsplayed > div {
+			div.game > div.lobby div.players > ul > li > div .stats > span.cardsplayed > div {
 				display: inline-block;
 				background-color: #ccc;
 				border-radius: 4px;
@@ -323,22 +334,25 @@
 			}
 			div.game > div.game div.players {
 				background-color: rgba(0,0,0,.15);
-				display: flex;
+				display: inline-block;
 				position: absolute;
 				top: 0px;
 				left: 0px;
 				right: 0px;
-				justify-content: center;
+				align-content: center;
+				white-space: nowrap;
 				overflow-x: auto;
 			}
 			div.game > div.game div.players > div {
-				-webkit-transition: all 0.15s ease-in-out;
-  				transition: all 0.15s ease-in-out;
+				display: inline-block;
 				width: 154px;
 				height: 75px;
+				vertical-align: bottom;
 				overflow-y: hidden;
-				flex-shrink: 0;
 				cursor: pointer;
+				
+				-webkit-transition: all 0.15s ease-in-out;
+  				transition: all 0.15s ease-in-out;
 			}
 			div.game > div.game div.players > div:not(:last-child) {
 				border-right: solid 2px #000;
@@ -373,7 +387,7 @@
 				top: 12px;
 			}
 			div.game > div.game h1.message {
-				z-index: -1;
+				z-index: -2;
 				background-color: #e12e2e;
 				position: absolute;
 				top: 85px;
@@ -381,6 +395,9 @@
 				right: 0;
 				color: white;
 				text-align: center;
+			}
+			div.game > div.game h1.message.swaphands {
+				z-index: -1;
 			}
 			div.game > div.game div.table {
 				padding-top: 175px;
@@ -412,26 +429,19 @@
 				position: relative;
 			}
 			div.game > div.game div.hand > div > div.cards {
-				display: flex;
-				padding: 20px;
-				padding-bottom: 0px;
+				display: block;
+				padding-top: 20px;
 				overflow-x: auto;
 				overflow-y: hidden;
-				justify-content: center;
-			}
-			div.game > div.game div.hand > div > div.cards .group {
-				display: inline-flex;
-				justify-content: center;
-			}
-			div.game > div.game div.hand > div > div.cards .group.unsorted:not(:empty) {
-				min-width: 100%;
+				align-content: center;
+				white-space: nowrap;
 			}
 			div.game > div.game div.hand > div > div.cards div.card {
+				display: inline-block;
 				position: relative;
 				filter: invert(.25);
 				margin-right: -90px;
 				margin-bottom: -100px;
-				flex-shrink: 0;
 			}
 			div.game > div.game div.hand > div > div.cards div.card.active {
 				filter: none;
@@ -440,16 +450,14 @@
 			div.game > div.game div.hand > div > div.cards div.card.active:hover {
 				top: -20px;
 			}
-			div.game > div.game div.hand > div > div.cards .group.unsorted > div.card:last-child {
-				margin-right: 0px;
-			}
 			div.game > div.game div.hand > div > div.cards > div.spacer {
 				z-index: -1;
-				display: block;
+				display: inline-block;
 				width: 90px;
 				height: 0px;
 			}
 			div.game > div.game div.wheel {
+				z-index: 500;
 				position: absolute;
 				background-color: rgba(0,0,0,.25);
     			-webkit-backdrop-filter: blur(12px) contrast(1.75);
@@ -500,7 +508,6 @@
 				filter: brightness(1.25);
 			}
 			div.game > div.winner {
-				z-index: 1;
 				background: #1b6dff;
 				position: absolute;
 				top: 0px;
@@ -557,10 +564,17 @@
 			div.game > div.winner > div > div {
 				text-align: center;
 			}
-			div.game > div.winner > div > div > img {
+			div.game > div.winner > div > div > div {
+				white-space: nowrap;
+				overflow-x: hidden;
+			}
+			div.game > div.winner > div > div > div > img {
+				background-color: #222;
 				border-radius: 200px;
 				width: 350px;
 				height: 350px;
+				margin: 0px 5px;
+				padding: 2px;
 			}
 			div.game > div.winner > div > div > h1 {
 				font-size: 32pt;
@@ -658,7 +672,7 @@
 					<div class="lobby">
 						<center>
 							<div class="title"><img src="https://src.me1312.net/img/me1312.net.silhouette.png" style="top: -67px;" /><img src="https://www.me1312.net/uno/assets/logo.png" /></div>
-							<ul class="players"></ul>
+							<div class="players"><ul></ul></div>
 						</center>
 					</div>
 					<div class="game" style="display: none;">
@@ -671,79 +685,79 @@
 							<div class="hand">
 								<div>
 									<a class="autosort active" title="Auto Sort" href="javascript:void(0)" onclick="toggleAutoSort()" draggable="false"></a>
-									<div class="cards">
-										<span class="group black">
-											<span class="group -3"></span>
-											<span class="group -2"></span>
-											<span class="group -1"></span>
-										</span>
-										<span class="group red">
-											<span class="group 13"></span>
-											<span class="group 12"></span>
-											<span class="group 11"></span>
-											<span class="group 10"></span>
-											<span class="group 9"></span>
-											<span class="group 8"></span>
-											<span class="group 7"></span>
-											<span class="group 6"></span>
-											<span class="group 5"></span>
-											<span class="group 4"></span>
-											<span class="group 3"></span>
-											<span class="group 2"></span>
-											<span class="group 1"></span>
-											<span class="group 0"></span>
-										</span>
-										<span class="group blue">
-											<span class="group 13"></span>
-											<span class="group 12"></span>
-											<span class="group 11"></span>
-											<span class="group 10"></span>
-											<span class="group 9"></span>
-											<span class="group 8"></span>
-											<span class="group 7"></span>
-											<span class="group 6"></span>
-											<span class="group 5"></span>
-											<span class="group 4"></span>
-											<span class="group 3"></span>
-											<span class="group 2"></span>
-											<span class="group 1"></span>
-											<span class="group 0"></span>
-										</span>
-										<span class="group green">
-											<span class="group 13"></span>
-											<span class="group 12"></span>
-											<span class="group 11"></span>
-											<span class="group 10"></span>
-											<span class="group 9"></span>
-											<span class="group 8"></span>
-											<span class="group 7"></span>
-											<span class="group 6"></span>
-											<span class="group 5"></span>
-											<span class="group 4"></span>
-											<span class="group 3"></span>
-											<span class="group 2"></span>
-											<span class="group 1"></span>
-											<span class="group 0"></span>
-										</span>
-										<span class="group yellow">
-											<span class="group 13"></span>
-											<span class="group 12"></span>
-											<span class="group 11"></span>
-											<span class="group 10"></span>
-											<span class="group 9"></span>
-											<span class="group 8"></span>
-											<span class="group 7"></span>
-											<span class="group 6"></span>
-											<span class="group 5"></span>
-											<span class="group 4"></span>
-											<span class="group 3"></span>
-											<span class="group 2"></span>
-											<span class="group 1"></span>
-											<span class="group 0"></span>
-										</span>
-										<span class="group unsorted"></span>
-										<div class="spacer"></div>
-									</div>
+									<div class="cards"><!--
+										--><span class="group black"><!--
+											--><span class="group -3"></span><!--
+											--><span class="group -2"></span><!--
+											--><span class="group -1"></span><!--
+										--></span><!--
+										--><span class="group red"><!--
+											--><span class="group 13"></span><!--
+											--><span class="group 12"></span><!--
+											--><span class="group 11"></span><!--
+											--><span class="group 10"></span><!--
+											--><span class="group 9"></span><!--
+											--><span class="group 8"></span><!--
+											--><span class="group 7"></span><!--
+											--><span class="group 6"></span><!--
+											--><span class="group 5"></span><!--
+											--><span class="group 4"></span><!--
+											--><span class="group 3"></span><!--
+											--><span class="group 2"></span><!--
+											--><span class="group 1"></span><!--
+											--><span class="group 0"></span><!--
+										--></span><!--
+										--><span class="group blue"><!--
+											--><span class="group 13"></span><!--
+											--><span class="group 12"></span><!--
+											--><span class="group 11"></span><!--
+											--><span class="group 10"></span><!--
+											--><span class="group 9"></span><!--
+											--><span class="group 8"></span><!--
+											--><span class="group 7"></span><!--
+											--><span class="group 6"></span><!--
+											--><span class="group 5"></span><!--
+											--><span class="group 4"></span><!--
+											--><span class="group 3"></span><!--
+											--><span class="group 2"></span><!--
+											--><span class="group 1"></span><!--
+											--><span class="group 0"></span><!--
+										--></span><!--
+										--><span class="group green"><!--
+											--><span class="group 13"></span><!--
+											--><span class="group 12"></span><!--
+											--><span class="group 11"></span><!--
+											--><span class="group 10"></span><!--
+											--><span class="group 9"></span><!--
+											--><span class="group 8"></span><!--
+											--><span class="group 7"></span><!--
+											--><span class="group 6"></span><!--
+											--><span class="group 5"></span><!--
+											--><span class="group 4"></span><!--
+											--><span class="group 3"></span><!--
+											--><span class="group 2"></span><!--
+											--><span class="group 1"></span><!--
+											--><span class="group 0"></span><!--
+										--></span><!--
+										--><span class="group yellow"><!--
+											--><span class="group 13"></span><!--
+											--><span class="group 12"></span><!--
+											--><span class="group 11"></span><!--
+											--><span class="group 10"></span><!--
+											--><span class="group 9"></span><!--
+											--><span class="group 8"></span><!--
+											--><span class="group 7"></span><!--
+											--><span class="group 6"></span><!--
+											--><span class="group 5"></span><!--
+											--><span class="group 4"></span><!--
+											--><span class="group 3"></span><!--
+											--><span class="group 2"></span><!--
+											--><span class="group 1"></span><!--
+											--><span class="group 0"></span><!--
+										--></span><!--
+										--><span class="group unsorted"></span><!--
+										--><div class="spacer"></div><!--
+									--></div>
 								</div>
 							</div>
 							<div class="wheel" style="display: none">
@@ -757,8 +771,7 @@
 					<div class="winner" style="display: none">
 						<div>
 							<div>
-								<img src="about:blank" />
-								<br>
+								<div class="players"></div>
 								<h1>Somebody Wins!</h1>
 							</div>
 						</div>
@@ -771,6 +784,29 @@
 					<input type="text" placeholder="Write your message here..."/><button>Send</button>
 				</form>
 			</div>
+		</div>
+		<div class="preload">
+			<img src="https://www.me1312.net/uno/assets/deck.png" />
+			<img src="https://www.me1312.net/uno/assets/-3.png" />
+			<img src="https://www.me1312.net/uno/assets/-2.png" />
+			<img src="https://www.me1312.net/uno/assets/-1.png" />
+			<img src="https://www.me1312.net/uno/assets/0.png" />
+			<img src="https://www.me1312.net/uno/assets/1.png" />
+			<img src="https://www.me1312.net/uno/assets/2.png" />
+			<img src="https://www.me1312.net/uno/assets/3.png" />
+			<img src="https://www.me1312.net/uno/assets/4.png" />
+			<img src="https://www.me1312.net/uno/assets/5.png" />
+			<img src="https://www.me1312.net/uno/assets/6.png" />
+			<img src="https://www.me1312.net/uno/assets/7.png" />
+			<img src="https://www.me1312.net/uno/assets/8.png" />
+			<img src="https://www.me1312.net/uno/assets/9.png" />
+			<img src="https://www.me1312.net/uno/assets/10.png" />
+			<img src="https://www.me1312.net/uno/assets/11.png" />
+			<img src="https://www.me1312.net/uno/assets/12.png" />
+			<img src="https://www.me1312.net/uno/assets/13.png" />
+			<img src="https://www.me1312.net/uno/assets/nugget1.png" />
+			<img src="https://www.me1312.net/uno/assets/nugget2.png" />
+			<img src="https://www.me1312.net/uno/assets/nugget3.png" />
 		</div>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -791,15 +827,26 @@
 					}
 				}, 75);
 				
+				$('body > div.preload').remove();
+				$('div.game > div.game div.hand > div > div.cards > .group.unsorted').sortable({
+					start: function() {
+						$('div.game > div.game div.hand > div > div.cards div.card').addClass('dragging');
+					},
+					stop: function() {
+						$('div.game > div.game div.hand > div > div.cards')[0].scrollTop = 0;
+					},
+					update: function() {
+						$('div.game > div.game div.hand > div > div.cards div.card').removeClass('dragging');
+						$('div.game > div.game div.hand > div > div.cards div.card').attr('style', function(i, style) {
+							return style && style.replace(/top[^;]+;?/g, '').replace(/left[^;]+;?/g, '');
+						});
+					}
+					
+				});
+				
 				if (window.location.hash.length <= 1) {
 					window.location.href = "https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#');
 				} else {
-					$('div.game > div.game div.hand > div > div.cards > .group.unsorted').sortable({
-						scroll: false,
-						start: function() {
-							$('div.game > div.game div.hand > div > div.cards div.card').addClass('dragging');
-						}
-					});
 					
 					var join = function(data) {
 						playerJoin(data.player);
@@ -808,7 +855,6 @@
 					SubDataClient.Protocol.playerjoin.callbacks.push(join);
 					
 					var quit = function(data) {
-						console.log(players[data.player].profile.displayName + ' (' + ((data.player == '+' + players[data.player].profile.id)?'':'@') + data.player + ') has quit');
 						$('[data-pid=' + players[data.player].profile.id + ']').remove();
 						delete players[data.player];
 						SubDataClient.Protocol.playerquit.callbacks.push(quit);
@@ -840,12 +886,18 @@
 					
 					var alert = function(data) {
 						var id = messageid++;
-						$('div.game > div.game').append('<h1 class="message" data-mid="' + id + '">' + data.message + '</h1>');
-						setTimeout(function() {
-							$('div.game > div.game h1.message[data-mid=' + id + ']').fadeOut(500, function() {
-								$('div.game > div.game h1.message[data-mid=' + id + ']').remove();
-							});
-						}, 2500);
+						var run = function() {
+							$('div.game > div.game').append('<h1 class="message" data-mid="' + id + '">' + data.message + '</h1>');
+							setTimeout(function() {
+								messagequeue.splice(0, 1);
+								if (messagequeue.length > 0) setTimeout(messagequeue[0], 250);
+								$('div.game > div.game h1.message[data-mid=' + id + ']').fadeOut(500, function() {
+									$('div.game > div.game h1.message[data-mid=' + id + ']').remove();
+								});
+							}, 2500);
+						}
+						messagequeue.push(run);
+						if (messagequeue.length <= 1) run();
 						SubDataClient.Protocol.alert.callbacks.push(alert);
 					}
 					SubDataClient.Protocol.alert.callbacks.push(alert);
@@ -910,7 +962,7 @@
 						}
 						$('div.game > div.game div.players > div[data-pid=' + players[data.player].profile.id + '] > div.card > span').html(parseInt($('div.game > div.game div.players > div[data-pid=' + players[data.player].profile.id + '] > div.card > span').html()) - 1);
 						players[data.player].stats.cardsPlayed++;
-						$('div.game > div.lobby ul.players > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.cardsplayed > span').html(players[data.player].stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+						$('div.game > div.lobby div.players > ul > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.cardsplayed > span').html(players[data.player].stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 						$('div.game > div.game div.table > div.card').css({
 							"background-image": "url(https://www.me1312.net/uno/assets/" + data.card.number + ".png)",
 							"background-color": cardcolor[data.card.color],
@@ -968,15 +1020,15 @@
 						switch (data.stat) {
 							case "gamesWon":
 								players[data.player].stats.gamesWon = data.value;
-								$('div.game > div.lobby ul.players > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.wins > span').html(players[data.player].stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+								$('div.game > div.lobby div.players > ul > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.wins > span').html(players[data.player].stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 								break;
 							case "cardsPlayed":
 								players[data.player].stats.cardsPlayed = data.value;
-								$('div.game > div.lobby ul.players > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.cardsplayed > span').html(players[data.player].stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+								$('div.game > div.lobby div.players > ul > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.cardsplayed > span').html(players[data.player].stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 								break;
 							case "consecutiveCardsDrawn":
 								players[data.player].stats.consecutiveCardsDrawn = data.value;
-								$('div.game > div.lobby ul.players > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.cardsdrawn > span').html(players[data.player].stats.consecutiveCardsDrawn.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+								$('div.game > div.lobby div.players > ul > li[data-pid=' + players[data.player].profile.id + '] > div .stats > span.cardsdrawn > span').html(players[data.player].stats.consecutiveCardsDrawn.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 								break;
 						}
 						SubDataClient.Protocol.updatestat.callbacks.push(updatestat);
@@ -994,10 +1046,21 @@
 					
 					var stop = function(data) {
 						if (data.hasOwnProperty("winner")) {
-							$('div.game > div.winner > div > div img').attr('src', ((players[data.winner].profile.image.isDefault)?'https://src.ME1312.net/img/avatar.inverted.svg':((players[data.winner].profile.image.hasOwnProperty('xlurl')))?players[data.winner].profile.image.xlurl:players[data.winner].profile.image.url));
-							$('div.game > div.winner > div > div h1').html((data.winner == self)?"Winner Winner Chicken Dinner!":players[data.winner].profile.displayName + ' Wins!');
-							players[data.winner].stats.gamesWon++;
-							$('div.game > div.lobby ul.players > li[data-pid=' + players[data.winner].profile.id + '] > div .stats > span.wins > span').html(players[data.winner].stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+							$('div.game > div.winner > div > div > div').html('');
+							var s = "";
+							for (var i = 0; i < data.winner.length; i++) {
+								if (i > 0) {
+									if (data.winner.length > 2) s += ", ";
+									else if (data.winner.length == 2) s += ' ';
+									if (i == data.winner.length - 1) s += "and ";
+								}
+								s += players[data.winner[i]].profile.displayName;
+
+								$('div.game > div.winner > div > div > div').append('<img src="' + ((players[data.winner[i]].profile.image.isDefault)?'https://src.ME1312.net/img/avatar.inverted.svg':((players[data.winner[i]].profile.image.hasOwnProperty('xlurl')))?players[data.winner[i]].profile.image.xlurl:players[data.winner[i]].profile.image.url) + '" />');
+								players[data.winner[i]].stats.gamesWon++;
+								$('div.game > div.lobby div.players > ul > li[data-pid=' + players[data.winner[i]].profile.id + '] > div .stats > span.wins > span').html(players[data.winner[i]].stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+							}
+							$('div.game > div.winner > div > div h1').html((data.winner.includes(self))?"Winner Winner Chicken Dinner!":s + ' Win' + ((data.winner.length > 1)?"":"s") + '!');
 							setTimeout(function() {
 								$('div.game > div.winner').fadeIn(250, function() {
 									$('div.game > div.game').hide();
@@ -1027,13 +1090,13 @@
 			}
 			var nuggetid = 0;
 			var messageid = 0;
+			var messagequeue = [];
 			var self = null;
 			var players = {};
 			function playerJoin(player) {
 				if (!players.hasOwnProperty(player.profile.name)) {
-					$('div.game > div.lobby ul').append('<li data-pid="' + player.profile.id + '"><div><div class="avatar"><div style="background-image: url(' + ((player.profile.image.isDefault)?'https://src.ME1312.net/img/avatar.inverted.svg':((player.profile.image.hasOwnProperty('xlurl')))?player.profile.image.xlurl:player.profile.image.url) + ')"></div></div><span class="name">' + player.profile.displayName + '</span><span class="tag">' + ((player.profile.name == '+' + player.profile.id)?'':'@') + player.profile.name + ((player.profile.name == '+' + player.profile.id)?'':'<span>#' + player.profile.id + '</span>') + '</span><div class="stats"><span class="wins" title="Number of wins"><i class="fas fa-trophy"></i><span>' + player.stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span><span class="cardsdrawn" title="Number of cards drawn at once"><i class="fas fa-fire"></i><span>' + player.stats.consecutiveCardsDrawn.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span><span class="cardsplayed" title="Number of cards played"><div></div><span>' + player.stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span></div></div>');
+					$('div.game > div.lobby ul').append('<li data-pid="' + player.profile.id + '"><div><div class="avatar"><div style="background-image: url(' + ((player.profile.image.isDefault)?'https://src.ME1312.net/img/avatar.inverted.svg':((player.profile.image.hasOwnProperty('xlurl')))?player.profile.image.xlurl:player.profile.image.url) + ')"></div></div><span class="name">' + player.profile.displayName + '</span><span class="tag">' + ((player.profile.name == '+' + player.profile.id)?'':'@') + player.profile.name + ((player.profile.name == '+' + player.profile.id)?'':'<span>#' + player.profile.id.toString(36).toUpperCase() + '</span>') + '</span><div class="stats"><span class="wins" title="Number of wins"><i class="fas fa-trophy"></i><span>' + player.stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span><span class="cardsdrawn" title="Number of cards drawn at once"><i class="fas fa-fire"></i><span>' + player.stats.consecutiveCardsDrawn.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span><span class="cardsplayed" title="Number of cards played"><div></div><span>' + player.stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span></div></div>');
 					players[player.profile.name] = player;
-					console.log(player.profile.displayName + ' (' + ((player.profile.name == '+' + player.profile.id)?'':'@') + player.profile.name + ') has joined');
 				}
 			}
 			
@@ -1200,7 +1263,6 @@
 								};
 								connection.onmessage = function(event) {
 									var json = JSON.parse(event.data);
-									console.log(json);
 									SubDataClient.Protocol[json.h].in(json.c);
 								};
 								connection.onclose = function(event) {

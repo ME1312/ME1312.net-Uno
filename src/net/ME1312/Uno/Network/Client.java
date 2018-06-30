@@ -104,7 +104,7 @@ public class Client {
             authorized.cancel();
             authorized = null;
             this.profile = profile;
-            subdata.log.info.println(channel.remoteAddress().toString() + " logged in as: " + profile.getString("displayName") + " (" + (((!profile.getString("name").equals("+" + profile.getInt("id")))?'@':"")) + profile.getString("name") + ")");
+            subdata.log.info.println(channel.remoteAddress().toString() + " logged in as: " + profile.getString("displayName") + " (" + (((!profile.getString("name").equals("+" + profile.getLong("id")))?'@':"")) + profile.getString("name") + ")");
             for (Client other : subdata.getClients()) {
                 if (other.isAuthorized()) other.sendPacket(new PacketMessage(null, profile.getString("displayName") + " has joined the chat room"));
             }

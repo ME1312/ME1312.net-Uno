@@ -25,10 +25,10 @@ public enum Card {
     R9(9, RED, 2),
 
     // Red Special
-    RR(10, RED, 2, REVERSE),
-    RS(11, RED, 2, SKIP_NEXT),
-    RD2(12, RED, 2, DRAW_NEXT, DRAW_NEXT),
-    RM(13, RED, 0),
+    RR("Reverse", 10, RED, 2, REVERSE),
+    RS("Skip", 11, RED, 2, SKIP_NEXT),
+    RD2("Draw 2", 12, RED, 2, DRAW_NEXT, DRAW_NEXT),
+    RM("Mystery Card", 13, RED, 0),
 
 
     // Green 0-9
@@ -44,10 +44,10 @@ public enum Card {
     G9(9, GREEN, 2),
 
     // Green Special
-    GR(10, GREEN, 2, REVERSE),
-    GS(11, GREEN, 2, SKIP_NEXT),
-    GD2(12, GREEN, 2, DRAW_NEXT, DRAW_NEXT),
-    GM(13, GREEN, 0),
+    GR("Reverse", 10, GREEN, 2, REVERSE),
+    GS("Skip", 11, GREEN, 2, SKIP_NEXT),
+    GD2("Draw 2", 12, GREEN, 2, DRAW_NEXT, DRAW_NEXT),
+    GM("Mystery Card", 13, GREEN, 0),
 
 
     // Blue 0-9
@@ -63,10 +63,10 @@ public enum Card {
     B9(9, BLUE, 2),
 
     // Blue Special
-    BR(10, BLUE, 2, REVERSE),
-    BS(11, BLUE, 2, SKIP_NEXT),
-    BD2(12, BLUE, 2, DRAW_NEXT, DRAW_NEXT),
-    BM(13, BLUE, 0),
+    BR("Reverse", 10, BLUE, 2, REVERSE),
+    BS("Skip", 11, BLUE, 2, SKIP_NEXT),
+    BD2("Draw 2", 12, BLUE, 2, DRAW_NEXT, DRAW_NEXT),
+    BM("Mystery Card", 13, BLUE, 0),
 
 
     // Yellow 0-9
@@ -82,19 +82,20 @@ public enum Card {
     Y9(9, YELLOW, 2),
 
     // Yellow Special
-    YR(10, YELLOW, 2, REVERSE),
-    YS(11, YELLOW, 2, SKIP_NEXT),
-    YD2(12, YELLOW, 2, DRAW_NEXT, DRAW_NEXT),
-    YM(13, YELLOW, 0),
+    YR("Reverse", 10, YELLOW, 2, REVERSE),
+    YS("Skip", 11, YELLOW, 2, SKIP_NEXT),
+    YD2("Draw 2", 12, YELLOW, 2, DRAW_NEXT, DRAW_NEXT),
+    YM("Mystery Card", 13, YELLOW, 0),
 
 
     // Special
-    W(-1, BLACK, 4, CHANGE_COLOR),
-    WD4(-2, BLACK, 4, CHANGE_COLOR, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT),
-    WD8(-3, BLACK, 0, CHANGE_COLOR, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT)
+    W("Wild Card", -1, BLACK, 4, CHANGE_COLOR),
+    WD4("Wild Draw 4", -2, BLACK, 4, CHANGE_COLOR, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT),
+    WD8("Wild Draw 8", -3, BLACK, 0, CHANGE_COLOR, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT, DRAW_NEXT)
 
     ;
     private static final Random random = new Random();
+    private final String name;
     private final int number;
     private final CardColor color;
     private final int defamount;
@@ -102,10 +103,18 @@ public enum Card {
     private int used = 0;
     private final CardAction[] actions;
     Card(int number, CardColor color, int amount, CardAction... actions) {
+        this(Integer.toString(number), number, color, amount, actions);
+    }
+    Card(String name, int number, CardColor color, int amount, CardAction... actions) {
+        this.name = name;
         this.number = number;
         this.color = color;
         this.amount = (this.defamount = amount);
         this.actions = actions;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public int getNumber() {
@@ -173,8 +182,11 @@ public enum Card {
 
     public static void resetDeck() {
         for (Card card : Card.values()) card.reset();
-        if (UnoServer.getInstance().game != null) for (Player player : UnoServer.getInstance().game.getPlayers()) {
-            player.getSubData().sendPacket(new PacketOutAlert("The deck has been reshuffled"));
+        if (UnoServer.getInstance().game != null) {
+            Game.log.info.println("The deck has been reshuffled");
+            for (Player player : UnoServer.getInstance().game.getPlayers()) {
+                player.getSubData().sendPacket(new PacketOutAlert("The deck has been reshuffled"));
+            }
         }
     }
 }

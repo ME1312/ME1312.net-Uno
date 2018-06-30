@@ -157,16 +157,26 @@ public final class UnoServer {
         return instance;
     }
 
-    public Player getPlayer(String name) {
-        HashMap<String, String> insensitive = new HashMap<String, String>();
-        for (String value : players.keySet()) insensitive.put(value.toLowerCase(), value);
-        return players.get(insensitive.get(name.toLowerCase()));
-    }
+    public Player getPlayer(String tag) {
+        long id = 0;
+        if (!tag.startsWith("+")) {
+            if (tag.startsWith("@")) tag = tag.substring(1);
+            if (tag.contains("#")) {
+                id = Long.parseLong(tag.substring(tag.split("#")[0].length() + 1).toLowerCase(), 36);
+                tag = tag.substring(0, tag.split("#")[0].length());
+            }
+        } else id = Integer.parseInt(tag.substring(1));
+        tag = tag.toLowerCase();
 
-    public boolean hasPlayer(String name) {
-        HashMap<String, String> insensitive = new HashMap<String, String>();
-        for (String value : players.keySet()) insensitive.put(value.toLowerCase(), value);
-        return insensitive.keySet().contains(name.toLowerCase());
+        if (id > 0) {
+            HashMap<String, String> idbased = new HashMap<String, String>();
+            for (String value : players.keySet()) idbased.put(Long.toString(players.get(value).getProfile().getLong("id")), value);
+            return players.get(idbased.get(Long.toString(id)));
+        } else {
+            HashMap<String, String> insensitive = new HashMap<String, String>();
+            for (String value : players.keySet()) insensitive.put(value.toLowerCase(), value);
+            return players.get(insensitive.get(tag));
+        }
     }
 
     /**

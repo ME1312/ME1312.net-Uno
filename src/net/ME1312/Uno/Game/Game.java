@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Game {
-    private static Logger log = new Logger("Game");
+    static Logger log = new Logger("Game");
     private UnoServer server;
     private LinkedList<Player> players;
     private LinkedList<Player> spectators = new LinkedList<Player>();
@@ -38,6 +38,8 @@ public class Game {
         this.rules = rules;
         this.initialCardCount = cards;
         this.timeout = timeout;
+
+        log.info.println("Starting Uno...");
 
         Card.WD4.resetAmount();
         if (rules.contains(GameRule.DRAW_8_CARD)) {
@@ -99,6 +101,8 @@ public class Game {
         }
 
         if (players.size() > 1) {
+            log.info.println("Restarting Uno...");
+
             for (Player player : players)
                 player.setPlaying(true);
             for (Player player : getAllPlayers()) {
@@ -137,7 +141,7 @@ public class Game {
         canswaphands = false;
         stackmode = false;
         boolean skipped = false;
-        boolean updatehand = false;
+        int discard_next = 0;
 
         // 1st pass of card actions
         for (CardAction action : pendingActions) {
@@ -146,7 +150,7 @@ public class Game {
                 case DISCARD_NEXT:
                     if (player.getCards().size() > 0) player.removeCard(player.getCards().keySet().toArray(new String[0])[new Random().nextInt(player.getCards().size())]);
                     if (player.getCards().size() <= 0) skipped = true;
-                    updatehand = true;
+                    discard_next++;
                     break;
                 case DRAW_NEXT:
                     if (rules.contains(GameRule.STACKING)) {
@@ -161,8 +165,12 @@ public class Game {
             }
             if (stop) break;
         }
-        if (updatehand) for (Player other : getAllPlayers()) {
-            other.getSubData().sendPacket(new PacketOutUpdateHand(this, other));
+        if (discard_next > 0) {
+            log.info.println(player.getProfile().getString("displayName") + " was forced to discard " + discard_next + " card" + ((discard_next == 1) ? "" : "s"));
+            for (Player other : getAllPlayers()) {
+                other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " was forced to discard " + discard_next + " card" + ((discard_next == 1) ? "" : "s")));
+                other.getSubData().sendPacket(new PacketOutUpdateHand(this, other));
+            }
         }
 
         // Generate playable card list
@@ -196,6 +204,7 @@ public class Game {
                 public void run() {
                     if (server.game == Game.this && timer == lastimer && player.getSubData() != null) {
                         player.getSubData().sendPacket(new PacketOutEndTurn());
+                        log.info.println(player.getProfile().getString("displayName") + " timed out");
                         for (Player other : getAllPlayers()) {
                             other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " timed out"));
                         }
@@ -226,17 +235,19 @@ public class Game {
         } else {
             // 2nd pass on card actions
             if (pendingActions.contains(CardAction.DRAW_NEXT)) {
-                int i = 0;
+                int draw_next = 0;
                 for (CardAction action : pendingActions)
                     if (action == CardAction.DRAW_NEXT) {
                         player.addCard(Card.getRandomCard());
-                        i++;
+                        draw_next++;
                         cardsdrawn++;
                     }
+                log.info.println(player.getProfile().getString("displayName") + " was forced to draw " + draw_next + " card" + ((draw_next == 1)?"":"s"));
                 for (Player other : getAllPlayers()) {
-                    other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " was forced to draw " + i + " card" + ((i == 1)?"":"s")));
+                    other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " was forced to draw " + draw_next + " card" + ((draw_next == 1)?"":"s")));
                 }
             } else if (!pendingActions.contains(CardAction.REVERSE)) {
+                log.info.println(player.getProfile().getString("displayName") + " got skipped");
                 for (Player other : getAllPlayers()) {
                     other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " got skipped"));
                 }
@@ -267,10 +278,11 @@ public class Game {
                 Card card = player.getCard(id);
                 lastCardNumber = card.getNumber();
                 lastCardColor = card.getColor();
+                log.info.println(player.getProfile().getString("displayName") + " played a " + ((card.getColor() == CardColor.BLACK)?"":card.getColor().toString().substring(0, 1).toUpperCase() + card.getColor().toString().substring(1).toLowerCase() + " ") + card.getName());
                 pendingActions.addAll(card.getActions());
                 if (card.getNumber() == 13) {
                     Random random = new Random();
-                    int i = random.nextInt(9);
+                    int i = random.nextInt(10);
                     while (i > 0) {
                         boolean enabled = true;
                         CardAction action = CardAction.values()[random.nextInt(CardAction.values().length)];
@@ -282,8 +294,8 @@ public class Game {
                             i--;
                         }
                     }
-                    log.info.println("Random CardAction Applied: " + pendingActions.toString());
-                    for (Player other : getAllPlayers()) {
+
+                    if (pendingActions.size() <= 0) for (Player other : getAllPlayers()) {
                         other.getSubData().sendPacket(new PacketOutAlert("The mystery card has spoken"));
                     }
                 }
@@ -338,6 +350,7 @@ public class Game {
                     cards.add(id);
             }
             if (!candraw && cards.size() <= 0) {
+                log.info.println(player.getProfile().getString("displayName") + " could not play a card");
                 for (Player other : getAllPlayers()) {
                     other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " could not play a card"));
                 }
@@ -352,10 +365,11 @@ public class Game {
     public void changeColor(CardColor color) {
         if (canchangecolor && color != CardColor.BLACK) {
             lastCardColor = color;
+            canchangecolor = false;
+            log.info.println(players.get(currentPlayer).getProfile().getString("displayName") + " changed the color to " + color.toString().substring(0, 1).toUpperCase() + color.toString().substring(1).toLowerCase());
             for (Player player : getAllPlayers()) {
                 player.getSubData().sendPacket(new PacketOutUpdateColor(color));
             }
-            canchangecolor = false;
             if (!canswaphands) endTurn();
         }
     }
@@ -370,11 +384,12 @@ public class Game {
             from.cards = t;
             to.uno = tuno;
             to.cards = f;
+            canswaphands = false;
+            log.info.println(from.getProfile().getString("displayName") + " swapped hands with " + to.getProfile().getString("displayName"));
             for (Player other : getAllPlayers()) {
                 other.getSubData().sendPacket(new PacketOutAlert(from.getProfile().getString("displayName") + " swapped hands with " + to.getProfile().getString("displayName")));
                 other.getSubData().sendPacket(new PacketOutUpdateHand(this, other));
             }
-            canswaphands = false;
             if (!canchangecolor) endTurn();
         }
     }
@@ -401,6 +416,7 @@ public class Game {
                 }
             } else if (!rules.contains(GameRule.NO_CALLOUT)) {
                 if (to.getCards().size() == 1 && !to.hasUno()) {
+                    log.info.println(from.getProfile().getString("displayName") + " called out " + to.getProfile().getString("displayName"));
                     for (Player other : getAllPlayers()) {
                         other.getSubData().sendPacket(new PacketOutAlert(from.getProfile().getString("displayName") + " called out " + to.getProfile().getString("displayName")));
                     }
@@ -421,12 +437,17 @@ public class Game {
         Random random = new Random();
         LinkedList<CardAction> tmpactions = new LinkedList<CardAction>();
         tmpactions.addAll(pendingActions);
+        int draw = 0;
+        int draw_all = 0;
+        int discard = 0;
+        int discard_all = 0;
         for (CardAction action : tmpactions) {
             if (action == CardAction.REVERSE) {
                 direction *= -1;
                 if (players.size() <= 2) {
                     pendingActions.add(CardAction.SKIP_NEXT);
                 } else {
+                    log.info.println(player.getProfile().getString("displayName") + " reversed it");
                     for (Player other : getAllPlayers()) {
                         other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " reversed it"));
                     }
@@ -434,23 +455,27 @@ public class Game {
                 pendingActions.removeFirstOccurrence(CardAction.REVERSE);
             }
             if (action == CardAction.DRAW) {
-                player.addCard(Card.getRandomCard());
+                if (player.getCards().size() > 0) player.addCard(Card.getRandomCard());
                 cardsdrawn++;
+                draw++;
             }
             if (action == CardAction.DRAW_ALL) {
                 for (Player other : players) {
-                    player.addCard(Card.getRandomCard());
+                    if (other.getCards().size() > 0) other.addCard(Card.getRandomCard());
                 }
                 cardsdrawn++;
+                draw_all++;
             }
             if (action == CardAction.DISCARD) {
                 if (player.getCards().size() > 0) player.removeCard(player.getCards().keySet().toArray(new String[0])[random.nextInt(player.getCards().size())]);
                 updatehand = true;
+                discard++;
             }
             if (action == CardAction.DISCARD_ALL) {
                 for (Player other : players) {
                     if (other.getCards().size() > 0) other.removeCard(other.getCards().keySet().toArray(new String[0])[random.nextInt(other.getCards().size())]);
                 }
+                discard_all++;
                 updatehand = true;
             }
 
@@ -480,6 +505,7 @@ public class Game {
                             }
                         }
 
+                        log.info.println("Everyone swapped hands");
                         for (Player other : getAllPlayers()) {
                             other.getSubData().sendPacket(new PacketOutAlert("Everyone swapped hands"));
                         }
@@ -490,6 +516,30 @@ public class Game {
         }
         if (updatehand) for (Player other : getAllPlayers()) {
             other.getSubData().sendPacket(new PacketOutUpdateHand(this, other));
+        }
+        if (draw_all > 0) {
+            log.info.println("Everyone was forced to draw " + draw_all + " card" + ((draw_all == 1) ? "" : "s"));
+            for (Player other : getAllPlayers()) {
+                other.getSubData().sendPacket(new PacketOutAlert("Everyone was forced to draw " + draw_all + " card" + ((draw_all == 1) ? "" : "s")));
+            }
+        }
+        if (discard_all > 0) {
+            log.info.println("Everyone was forced to discard " + discard_all + " card" + ((discard_all == 1) ? "" : "s"));
+            for (Player other : getAllPlayers()) {
+                other.getSubData().sendPacket(new PacketOutAlert("Everyone was forced to discard " + discard_all + " card" + ((discard_all == 1) ? "" : "s")));
+            }
+        }
+        if (draw > 0) {
+            log.info.println(player.getProfile().getString("displayName") + " was forced to draw " + draw + " card" + ((draw == 1) ? "" : "s"));
+            for (Player other : getAllPlayers()) {
+                other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " was forced to draw " + draw + " card" + ((draw == 1) ? "" : "s")));
+            }
+        }
+        if (discard > 0) {
+            log.info.println(player.getProfile().getString("displayName") + " was forced to discard " + discard + " card" + ((discard == 1) ? "" : "s"));
+            for (Player other : getAllPlayers()) {
+                other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " was forced to discard " + discard + " card" + ((discard == 1) ? "" : "s")));
+            }
         }
 
         JSONObject stats = player.getStats();
@@ -502,14 +552,16 @@ public class Game {
         }
         cardsdrawn = 0;
 
-        Player winner = null;
+        ArrayList<Player> winners = new ArrayList<Player>();
 
         for (Player other : players) {
-            if (other.getCards().size() <= 0) winner = other;
+            if (other.getCards().size() <= 0) {
+                winners.add(other);
+            }
         }
 
-        if (winner != null) {
-            stop(winner);
+        if (winners.size() > 0) {
+            stop(winners.toArray(new Player[winners.size()]));
         } else {
             currentPlayer += direction;
             if (currentPlayer < 0 || currentPlayer >= players.size()) {
@@ -523,23 +575,29 @@ public class Game {
         }
     }
 
-    public void stop() {
-        stop(null);
-    }
-
-    public void stop(Player winner) {
+    public void stop(Player... winners) {
         server.game = null;
         for (Player other : getAllPlayers()) {
-            other.getSubData().sendPacket(new PacketOutEndGame(winner));
+            other.getSubData().sendPacket(new PacketOutEndGame(winners));
             other.setPlaying(false);
         }
-        log.info.println((winner == null)?"Uno has been stopped":winner.getProfile().getString("displayName") + " won Uno");
-        if (winner != null) {
+        int i = 0;
+        String s = "";
+        for (Player winner : winners) {
+            i++;
+            if (i > 1 ) {
+                if (winners.length > 2) s += ", ";
+                else if (winners.length == 2) s += ' ';
+                if (i == winners.length) s += "and ";
+            }
+            s += winner.getProfile().getString("displayName");
+
             players.remove(winner);
             JSONObject stats = winner.getStats();
             stats.put("gamesWon", stats.getInt("gamesWon") + 1);
             winner.setStats(stats);
         }
+        log.info.println((winners.length <= 0)?"Uno has been stopped":s+" won Uno");
         server.lastGame = this;
     }
 
@@ -548,6 +606,7 @@ public class Game {
             int index = players.indexOf(player);
             players.remove(player);
             player.setPlaying(false);
+            log.info.println(player.getProfile().getString("displayName") + " has left the game");
             for (Player other : getAllPlayers())
                 other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " has left the game"));
             if (players.size() <= 1) {
