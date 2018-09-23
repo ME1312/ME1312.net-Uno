@@ -4,5 +4,5 @@ Settings:
   Turn-Timeout: 60
   Game-Rules: []
   SubData:
-    Address: '0.0.0.0:24392'
+    Address: '0.0.0.0:31480'
     Password: ''

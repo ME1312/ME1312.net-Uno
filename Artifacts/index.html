@@ -827,6 +827,10 @@
 					}
 				}, 75);
 				
+				setInterval(function() {
+					if (SubDataClient.connection != null) SubDataClient.send(SubDataClient.Protocol.keepalive.out());
+				}, 30000);
+				
 				$('body > div.preload').remove();
 				$('div.game > div.game div.hand > div > div.cards > .group.unsorted').sortable({
 					start: function() {
@@ -1305,6 +1309,12 @@
 						out: function(profile, password, callback = null) {
 							if (callback != null) SubDataClient.Protocol.authorization.callbacks.push(callback);
 							return {h:"authorization", v:"1.0a", c:{profile: profile, password: password}};
+						},
+					},
+					keepalive: {
+						in: function() {},
+						out: function() {
+							return {h:"keepalive", v:"1.0a"};
 						},
 					},
 					callout: {

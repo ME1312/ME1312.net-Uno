@@ -122,12 +122,14 @@ public final class SubDataServer {
         registerPacket(new PacketPlayerList(server), "PlayerList");
         registerPacket(new PacketInDrawCard(server), "DrawCard");
         registerPacket(new PacketInSpectateGame(server), "SpectateGame");
+        registerPacket(new PacketKeepAlive(), "KeepAlive");
         registerPacket(new PacketMessage(server), "Message");
         registerPacket(new PacketPlayCard(server), "PlayCard");
         registerPacket(new PacketSwapHand(server), "SwapHand");
 
         registerPacket(PacketAuthorization.class, "Authorization");
         registerPacket(PacketChangeColor.class, "ChangeColor");
+        registerPacket(PacketKeepAlive.class, "KeepAlive");
         registerPacket(PacketMessage.class, "Message");
         registerPacket(PacketOutAddCard.class, "AddCard");
         registerPacket(PacketOutAlert.class, "Alert");
