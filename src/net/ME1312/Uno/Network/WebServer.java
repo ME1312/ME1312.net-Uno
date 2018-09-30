@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.util.CharsetUtil;
+import net.ME1312.Galaxi.Engine.GalaxiEngine;
 import net.ME1312.Uno.Library.Util;
 import net.ME1312.Uno.UnoServer;
 
@@ -44,8 +45,8 @@ public class WebServer extends SimpleChannelInboundHandler<FullHttpRequest> {
         if ("/".equals(req.uri()) || "/index.html".equals(req.uri())) {
             String page;
             if (System.getProperty("webserver.debug", "false").equalsIgnoreCase("true")) {
-                if (!new File(UnoServer.getInstance().dir, "index.html").exists()) Util.copyFromJar(WebServer.class.getClassLoader(), "net/ME1312/Uno/Library/Files/index.html", new File(UnoServer.getInstance().dir, "index.html").getPath());
-                InputStream stream = new FileInputStream(new File(UnoServer.getInstance().dir, "index.html"));
+                if (!new File(GalaxiEngine.getInstance().getRuntimeDirectory(), "index.html").exists()) Util.copyFromJar(WebServer.class.getClassLoader(), "net/ME1312/Uno/Library/Files/index.html", new File(GalaxiEngine.getInstance().getRuntimeDirectory(), "index.html").getPath());
+                InputStream stream = new FileInputStream(new File(GalaxiEngine.getInstance().getRuntimeDirectory(), "index.html"));
                 page = Util.readAll(new BufferedReader(new InputStreamReader(stream)));
                 stream.close();
             } else {

@@ -2,8 +2,7 @@ package net.ME1312.Uno.Network;
 
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import net.ME1312.Uno.Game.Player;
-import net.ME1312.Uno.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Config.YAMLSection;
 import net.ME1312.Uno.Library.Exception.IllegalPacketException;
 import net.ME1312.Uno.Library.Util;
 import net.ME1312.Uno.Network.Packet.PacketAuthorization;

@@ -1,6 +1,7 @@
 package net.ME1312.Uno.Game;
 
-import net.ME1312.Uno.Library.UniversalFile;
+import net.ME1312.Galaxi.Engine.GalaxiEngine;
+import net.ME1312.Galaxi.Library.UniversalFile;
 import net.ME1312.Uno.Library.Util;
 import net.ME1312.Uno.Network.Client;
 import net.ME1312.Uno.Network.ClientHandler;
@@ -51,7 +52,7 @@ public class Player implements ClientHandler {
     }
 
     public JSONObject getStats() {
-        UniversalFile file = new UniversalFile(server.dir, "Stats:" + profile.getLong("id") +  ".json");
+        UniversalFile file = new UniversalFile(GalaxiEngine.getInstance().getRuntimeDirectory(), "Stats:" + profile.getLong("id") +  ".json");
         JSONObject stats = new JSONObject();
         if (file.exists()) {
             try {
@@ -72,7 +73,7 @@ public class Player implements ClientHandler {
     }
 
     public void setStats(JSONObject stats) {
-        File parent = new File(server.dir, "Stats");
+        File parent = new File(GalaxiEngine.getInstance().getRuntimeDirectory(), "Stats");
         if (parent.exists() || parent.mkdirs()) {
             File file = new File(parent, profile.getLong("id") + ".json");
             try {

@@ -1,7 +1,7 @@
 package net.ME1312.Uno.Game;
 
-import net.ME1312.Uno.Library.Log.Logger;
-import net.ME1312.Uno.Library.NamedContainer;
+import net.ME1312.Galaxi.Library.Log.Logger;
+import net.ME1312.Galaxi.Library.NamedContainer;
 import net.ME1312.Uno.Network.Packet.*;
 import net.ME1312.Uno.UnoServer;
 import org.json.JSONObject;

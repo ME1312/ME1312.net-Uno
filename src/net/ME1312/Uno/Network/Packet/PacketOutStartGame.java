@@ -1,9 +1,9 @@
 package net.ME1312.Uno.Network.Packet;
 
+import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Version.Version;
 import net.ME1312.Uno.Game.Game;
 import net.ME1312.Uno.Game.Player;
-import net.ME1312.Uno.Library.Config.YAMLSection;
-import net.ME1312.Uno.Library.Version.Version;
 import net.ME1312.Uno.Network.PacketOut;
 
 import java.math.BigInteger;

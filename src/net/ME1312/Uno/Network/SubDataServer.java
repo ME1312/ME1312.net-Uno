@@ -14,12 +14,12 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketSe
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
-import net.ME1312.Uno.Library.Container;
-import net.ME1312.Uno.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Container;
+import net.ME1312.Galaxi.Library.Log.Logger;
+import net.ME1312.Galaxi.Library.Version.Version;
 import net.ME1312.Uno.Library.Exception.IllegalPacketException;
-import net.ME1312.Uno.Library.Log.Logger;
 import net.ME1312.Uno.Library.Util;
-import net.ME1312.Uno.Library.Version.Version;
 import net.ME1312.Uno.Network.Packet.*;
 import net.ME1312.Uno.UnoServer;
 import org.json.JSONObject;

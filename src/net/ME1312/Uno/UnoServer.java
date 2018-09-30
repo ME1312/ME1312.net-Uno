@@ -1,48 +1,40 @@
 package net.ME1312.Uno;
 
-import jline.console.ConsoleReader;
+import net.ME1312.Galaxi.Engine.GalaxiEngine;
+import net.ME1312.Galaxi.Library.Config.YAMLConfig;
+import net.ME1312.Galaxi.Library.Log.Logger;
+import net.ME1312.Galaxi.Library.UniversalFile;
+import net.ME1312.Galaxi.Library.Version.Version;
+import net.ME1312.Galaxi.Plugin.Plugin;
+import net.ME1312.Galaxi.Plugin.PluginInfo;
 import net.ME1312.Uno.Game.Game;
 import net.ME1312.Uno.Game.GameRule;
 import net.ME1312.Uno.Game.Player;
 import net.ME1312.Uno.Library.*;
-import net.ME1312.Uno.Library.Config.YAMLConfig;
-import net.ME1312.Uno.Library.Config.YAMLSection;
-import net.ME1312.Uno.Library.Log.FileLogger;
-import net.ME1312.Uno.Library.Log.Logger;
-import net.ME1312.Uno.Library.Version.Version;
-import net.ME1312.Uno.Library.Version.VersionType;
 import net.ME1312.Uno.Network.SubDataServer;
-import org.fusesource.jansi.AnsiConsole;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * Uno Main Class
  */
+@Plugin(name = "UnoServer", version = "1.2a", authors = "ME1312", description = "Play Uno through ME1312.net", website = "https://www.me1312.net/uno")
 public final class UnoServer {
     public List<GameRule> rules = new ArrayList<GameRule>();
     public LinkedHashMap<String, Player> players = new LinkedHashMap<String, Player>();
-    public final TreeMap<String, Command> commands = new TreeMap<String, Command>();
-    private final List<String> knownClasses = new ArrayList<String>();
 
     public Logger log;
-    public final UniversalFile dir = new UniversalFile(new File(System.getProperty("user.dir")));
     public YAMLConfig config;
     public SubDataServer subdata = null;
     public Game game = null;
     public Game lastGame = null;
-    public final Version version = new Version("1.2a");
-    //public final Version version = new Version(new Version("1.1a"), VersionType.BETA, 1); // TODO Beta Version Setting
+    public PluginInfo app = null;
 
     private static UnoServer instance;
-    private ConsoleReader jline;
-    private boolean ready = false;
 
     /**
      * Uno Launch
@@ -55,26 +47,14 @@ public final class UnoServer {
     }
 
     private void init(String[] args) {
-        try {
-            JarFile jarFile = new JarFile(new File(UnoServer.class.getProtectionDomain().getCodeSource().getLocation().toURI()));
-            Enumeration<JarEntry> entries = jarFile.entries();
-
-            boolean isplugin = false;
-            while (entries.hasMoreElements()) {
-                JarEntry entry = entries.nextElement();
-                if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-                    knownClasses.add(entry.getName().substring(0, entry.getName().length() - 6).replace('/', '.'));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         log = new Logger("Server");
         try {
-            jline = new ConsoleReader(System.in, AnsiConsole.out());
-            Logger.setup(AnsiConsole.out(), AnsiConsole.err(), jline, dir);
-            log.info.println("Loading Uno v" + version.toString() + " Libraries");
+            app = PluginInfo.getPluginInfo(this);
+            app.setLogger(log);
+            GalaxiEngine engine = GalaxiEngine.init(app);
+
+            log.info.println("Loading Uno v" + app.getVersion().toString() + " Libraries");
+            File dir = engine.getRuntimeDirectory();
             dir.mkdirs();
             if (!(new UniversalFile(dir, "config.yml").exists())) {
                 Util.copyFromJar(UnoServer.class.getClassLoader(), "net/ME1312/Uno/Library/Files/config.yml", new UniversalFile(dir, "config.yml").getPath());
@@ -99,48 +79,17 @@ public final class UnoServer {
 
             subdata = new SubDataServer(this, Integer.parseInt(config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[1]),
                     (config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[0].equals("0.0.0.0"))?null:InetAddress.getByName(config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[0]));
-            log.info.println("SubData WebDirect Listening on ws://" + config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392") + "/game");
+            log.info.println("Server Listening on ws://" + config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392") + "/game");
             loadDefaults();
 
-            loop();
+            engine.start(this::stop);
         } catch (Exception e) {
             log.error.println(e);
-            stop(1);
-        }
-    }
-
-    public void reload() throws IOException {
-        if (subdata != null)
-            subdata.destroy();
-
-        config.reload();
-        try {
-            subdata = new SubDataServer(this, Integer.parseInt(config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[1]),
-                    (config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[0].equals("0.0.0.0"))?null:InetAddress.getByName(config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[0]));
-        } catch (Exception e) {
-            log.error.println(e);
-        }
-    }
-
-    private void loop() throws Exception {
-        String umsg;
-        ready = true;
-        while (ready && (umsg = jline.readLine(">")) != null) {
-            if (!ready || umsg.equals("")) continue;
-            final String cmd = (umsg.startsWith("/"))?((umsg.contains(" ")?umsg.split(" "):new String[]{umsg})[0].substring(1)):((umsg.contains(" ")?umsg.split(" "):new String[]{umsg})[0]);
-            if (commands.keySet().contains(cmd.toLowerCase())) {
-                ArrayList<String> args = new ArrayList<String>();
-                args.addAll(Arrays.asList(umsg.contains(" ")?umsg.split(" "):new String[]{umsg}));
-                args.remove(0);
-                try {
-                    commands.get(cmd.toLowerCase()).command(cmd, args.toArray(new String[args.size()]));
-                } catch (Exception e) {
-                    log.error.println(new InvocationTargetException(e, "Uncaught exception while running command"));
-                }
+            if (GalaxiEngine.getInstance() != null) {
+                GalaxiEngine.getInstance().stop();
             } else {
-                log.message.println("Unknown Command - " + umsg);
+                System.exit(1);
             }
-            jline.getOutput().write("\b \b");
         }
     }
 
@@ -181,18 +130,10 @@ public final class UnoServer {
 
     /**
      * Stop Uno
-     *
-     * @param exit Exit Code
      */
-    public void stop(int exit) {
-        if (ready) {
-            log.info.println("Shutting down...");
-            ready = false;
+    private void stop() {
+        log.info.println("Shutting down...");
 
-            if (subdata != null) Util.isException(() -> subdata.destroy());
-
-            Util.isException(FileLogger::end);
-            System.exit(exit);
-        }
+        if (subdata != null) Util.isException(() -> subdata.destroy());
     }
 }

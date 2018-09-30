@@ -1,7 +1,7 @@
 package net.ME1312.Uno.Network.Packet;
 
-import net.ME1312.Uno.Library.Config.YAMLSection;
-import net.ME1312.Uno.Library.Version.Version;
+import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Version.Version;
 import net.ME1312.Uno.Network.PacketOut;
 
 public class PacketOutPlayerQuit implements PacketOut {
