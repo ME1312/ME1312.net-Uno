@@ -79,10 +79,10 @@ public final class UnoServer {
                 }
             }
 
-            port = Integer.parseInt(config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[1];
-            subdata = new SubDataServer(this, port),
-                    (config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[0].equals("0.0.0.0"))?null:InetAddress.getByName(config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[0]));
-            log.info.println("Server Listening on ws://" + config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392") + "/game");
+            port = Integer.parseInt(config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:31480").split(":")[1]);
+            subdata = new SubDataServer(this, port,
+                    (config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:31480").split(":")[0].equals("0.0.0.0"))?null:InetAddress.getByName(config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:31480").split(":")[0]));
+            log.info.println("Server Listening on ws://" + config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:31480") + "/game");
             loadDefaults();
 
             engine.start(this::stop);
