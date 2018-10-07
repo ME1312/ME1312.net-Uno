@@ -1,5 +1,6 @@
 package net.ME1312.Uno;
 
+import com.dosse.upnp.UPnP;
 import net.ME1312.Galaxi.Engine.GalaxiEngine;
 import net.ME1312.Galaxi.Library.Config.YAMLConfig;
 import net.ME1312.Galaxi.Library.Log.Logger;
@@ -30,6 +31,7 @@ public final class UnoServer {
     public Logger log;
     public YAMLConfig config;
     public SubDataServer subdata = null;
+    public int port;
     public Game game = null;
     public Game lastGame = null;
     public PluginInfo app = null;
@@ -77,12 +79,20 @@ public final class UnoServer {
                 }
             }
 
-            subdata = new SubDataServer(this, Integer.parseInt(config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[1]),
+            port = Integer.parseInt(config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[1];
+            subdata = new SubDataServer(this, port),
                     (config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[0].equals("0.0.0.0"))?null:InetAddress.getByName(config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392").split(":")[0]));
             log.info.println("Server Listening on ws://" + config.get().getSection("Settings").getSection("SubData").getRawString("Address", "127.0.0.1:24392") + "/game");
             loadDefaults();
 
             engine.start(this::stop);
+
+            if (UPnP.isUPnPAvailable()) {
+                if (config.get().getSection("Settings").getBoolean("UPnP", true))
+                    UPnP.openPortTCP(port);
+            } else {
+                log.warn.println("UPnP is currently unavailable; Ports may not be automatically forwarded on this device");
+            }
         } catch (Exception e) {
             log.error.println(e);
             if (GalaxiEngine.getInstance() != null) {
@@ -135,5 +145,8 @@ public final class UnoServer {
         log.info.println("Shutting down...");
 
         if (subdata != null) Util.isException(() -> subdata.destroy());
+
+        if (UPnP.isUPnPAvailable() && UPnP.isMappedTCP(port))
+                UPnP.closePortTCP(port);
     }
 }
