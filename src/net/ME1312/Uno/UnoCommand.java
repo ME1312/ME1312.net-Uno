@@ -1,6 +1,7 @@
 package net.ME1312.Uno;
 
-import net.ME1312.Galaxi.Plugin.Command;
+import net.ME1312.Galaxi.Plugin.Command.Command;
+import net.ME1312.Galaxi.Plugin.Command.CommandSender;
 import net.ME1312.Uno.Game.Card;
 import net.ME1312.Uno.Game.Game;
 import net.ME1312.Uno.Game.GameRule;
@@ -21,7 +22,7 @@ public class UnoCommand {
     protected static void load(UnoServer server) {
         new Command(server.app) {
             @Override
-            public void command(String handle, String[] args) {
+            public void command(CommandSender sender, String handle, String[] args) {
                 server.log.message.println("There are " + server.players.size() + " player" + ((server.players.size() == 1)?"":"s") + " online" + ((server.players.size() > 0)?":":""));
                 for (Player player : server.players.values()) {
                     String s = player.getProfile().getString("displayName") + " (";
@@ -43,7 +44,7 @@ public class UnoCommand {
         ).register("list");
         new Command(server.app) {
             @Override
-            public void command(String handle, String[] args) {
+            public void command(CommandSender sender, String handle, String[] args) {
                 if (args.length > 0) {
                     String str = args[0];
                     for (int i = 1; i < args.length; i++) {
@@ -67,7 +68,7 @@ public class UnoCommand {
                 "  /password VerySecure").register("password");
         new Command(server.app) {
             @Override
-            public void command(String handle, String[] args) {
+            public void command(CommandSender sender, String handle, String[] args) {
                 if (args.length > 0) {
                     Player player;
                     if ((player = server.getPlayer(args[0])) == null) {
@@ -86,7 +87,31 @@ public class UnoCommand {
                     server.log.message.println("Usage: /" + handle + " <player>");
                 }
             }
-        }.description("Kick a player").usage("<player>").help(
+        }.autocomplete(((sender, handle, args) -> {
+            String last = (args.length > 0)?args[args.length - 1].toLowerCase():"";
+            List<String> list = new ArrayList<String>();
+            if (args.length == 1) {
+                if (last.length() == 0) {
+                    for (Player player : server.players.values()) {
+                        if (!player.getProfile().getString("name").equals("+" + player.getProfile().getLong("id"))) {
+                            list.add(player.getProfile().getString("name") + "#" + Long.toString(player.getProfile().getLong("id"), 36));
+                        }
+                        list.add("+" + player.getProfile().getLong("id"));
+                    }
+                } else {
+                    for (Player player : server.players.values()) {
+                        if (!player.getProfile().getString("name").equals("+" + player.getProfile().getLong("id"))) {
+                            String tag = player.getProfile().getString("name") + "#" + Long.toString(player.getProfile().getLong("id"), 36);
+                            if (tag.toLowerCase().startsWith(last)) list.add(tag);
+                        }
+                        if (("+" + player.getProfile().getLong("id")).toLowerCase().startsWith(last)) list.add("+" + player.getProfile().getLong("id"));
+                    }
+                }
+                return list.toArray(new String[0]);
+            } else {
+                return new String[0];
+            }
+        })).description("Kick a player").usage("<player>").help(
                 "This command will kick the specified player",
                 "from this server.",
                 "",
@@ -94,7 +119,7 @@ public class UnoCommand {
                 "  /kick ME1312").register("kick");
         new Command(server.app) {
             @Override
-            public void command(String handle, String[] args) {
+            public void command(CommandSender sender, String handle, String[] args) {
                 if (server.players.size() >= 2) {
                     boolean restart = false;
                     if (server.game != null) {
@@ -123,7 +148,7 @@ public class UnoCommand {
         ).register("start");
         new Command(server.app) {
             @Override
-            public void command(String handle, String[] args) {
+            public void command(CommandSender sender, String handle, String[] args) {
                 if (server.lastGame != null) {
                     server.game = server.lastGame;
                     server.lastGame = null;
@@ -167,7 +192,7 @@ public class UnoCommand {
         help.add("  /gamerule Stacking");
         new Command(server.app) {
             @Override
-            public void command(String handle, String[] args) {
+            public void command(CommandSender sender, String handle, String[] args) {
                 if (args.length > 0) {
                     String str = args[0];
                     for (int i = 1; i < args.length; i++) {
@@ -197,6 +222,7 @@ public class UnoCommand {
                 }
             }
         }.description("Toggles game rules").usage("[rule]").help(help.toArray(new String[help.size()])).register("gamerule", "rule");
+        /*
         hi = 0;
         hs = "  ";
         help = new LinkedList<String>();
@@ -219,7 +245,7 @@ public class UnoCommand {
         help.add("  /rig ME1312 WD8 WD4");
         new Command(server.app) {
             @Override
-            public void command(String handle, String[] args) {
+            public void command(CommandSender sender, String handle, String[] args) {
                 if (args.length > 1) {
                     if (server.game != null) {
                         Player player;
@@ -265,9 +291,10 @@ public class UnoCommand {
                 }
             }
         }.description("Sets a players deck").usage("<player>", "<cards...>").help(help.toArray(new String[help.size()])).register("stack", "rig");
+        */
         new Command(server.app) {
             @Override
-            public void command(String handle, String[] args) {
+            public void command(CommandSender sender, String handle, String[] args) {
                 if (server.game != null) {
                     server.game.stop();
                 } else {

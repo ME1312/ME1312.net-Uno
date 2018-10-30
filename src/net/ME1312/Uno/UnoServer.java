@@ -53,6 +53,8 @@ public final class UnoServer {
         try {
             app = PluginInfo.getPluginInfo(this);
             app.setLogger(log);
+            if (UnoServer.class.getPackage().getImplementationVersion() != null) app.setSignature(new Version(UnoServer.class.getPackage().getImplementationVersion()));
+            app.setIcon(UnoServer.class.getResourceAsStream("/net/ME1312/Uno/Library/Files/icon.png"));
             GalaxiEngine engine = GalaxiEngine.init(app);
 
             log.info.println("Loading Uno v" + app.getVersion().toString() + " Libraries");
