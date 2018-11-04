@@ -80,21 +80,9 @@
 			div.login span.page-title {
 				display: block;
 				vertical-align: middle;
-				margin: 0;
-    			margin-top: 0.83em;
-				font-size: 1.125em;
+    			margin: 0.83em 0px;
+				font-size: 1.5em;
     			font-weight: bold;
-			}
-			div.login span.page-subtitle {
-				display: block;
-				vertical-align: middle;
-				margin: 0.125em 0;
-    			margin-bottom: 0.83em;
-				font-size: 1em;
-			}
-			div.login span.page-subtitle {
-				font-weight: normal;
-				font-size: 1em;
 			}
 			div.login div.page span.response {
 				color: #D00;
@@ -347,7 +335,7 @@
   				transition: all 0.15s ease-in-out;
 			}
 			div.game > div.game div.players > div:not(:last-child) {
-				border-right: solid 2px #000;
+				border-right: solid 1px rgba(0, 0, 0, .125);
 			}
 			div.game > div.game div.players > div.active {
 				background-color: #1b6dff;
@@ -619,17 +607,88 @@
 			div.chat > form > input {
 				flex-grow: 1;
 			}
-			@media only screen and (max-width:1024px) {
+			@media only screen and (max-width:720px) {
 			    div.login span.page-title {
 					font-size: 0.83em;
 			    }
-			    div.login span.page-subtitle {
-					font-size: 0.67em;
-			    }
 				div.game > a.chat,
-				div.game > div.lobby div.players,
 				div.game > div.game div.hand > div > a.autosort {
 					display: none;
+				}
+				div.game > div.lobby div.players {
+					padding: 0px;
+					top: initial;
+					overflow: auto;
+				}
+				div.game > div.lobby div.players > ul {
+					display: block;
+					min-height: initial;
+				}
+				div.game > div.lobby div.players > ul > li {
+					display: block;
+					padding: 0px;
+				}
+				div.game > div.lobby div.players > ul > li:not(:first-child) {
+					border-top: rgba(0, 0, 0, .125) 1px solid;
+				}
+				div.game > div.lobby div.players > ul > li > div {
+					background-color: transparent;
+					border-radius: 0px;
+					width: 100%;
+					min-height: initial;
+					padding: 0px;
+				}
+				div.game > div.lobby div.players > ul > li > div .avatar {
+					display: inline-block;
+					border-radius: 0px;
+					background-color: transparent;
+					margin-top: 0px;
+					top: 2px;
+					width: 50px;
+					padding: 0px;
+				}
+				div.game > div.lobby div.players > ul > li > div .avatar > div {
+					border-radius: 0px;
+					width: 100%;
+					padding-top: 100%;
+				}
+				div.game > div.lobby div.players > ul > li > div .tag-container {
+					display: inline-block;
+					margin-left: 4px;
+					position: absolute;
+    				top: 5px;
+				}
+				div.game > div.lobby div.players > ul > li > div .name {
+					font-size: 18pt;
+				}
+				div.game > div.lobby div.players > ul > li > div .name,
+				div.game > div.lobby div.players > ul > li > div .name > a {
+					color: #FFF;
+				}
+				div.game > div.lobby div.players > ul > li > div .tag {
+					display: block;
+					color: #BBB;
+					margin-bottom: 0px;
+				}
+				div.game > div.lobby div.players > ul > li > div .tag > span {
+					font-size: 9pt;
+					color: #777;
+				}
+				div.game > div.lobby div.players > ul > li > div .stats {
+					display: none;
+				}
+				div.game > div.game div.players > div {
+					width: 58px;
+				}
+				div.game > div.game div.players > div > img {
+					display: block;
+					width: 50px;
+					height: 50px;
+					margin: 0px;
+				}
+				div.game > div.game div.players > div > div.card {
+					top: -14px;
+					margin: 0px;
 				}
 				div.game > div.game div.card {
 					width: 33.2vw;
@@ -706,7 +765,7 @@
 			}
 		</style>
 		<div class="login"><center>
-			<span class="page-title">ME1312.net Uno</span><span class="page-subtitle"><span>ME1312.net Uno Client v1.2b</span><hr></span>
+			<span class="page-title">ME1312.net Uno<hr></span>
 			<br>
 			<div class="page">
 				<form class="login" style="display: none;" enctype="multipart/form-data" onSubmit="return SubDataClient.connect(window.location.hash.substr(1), $(this).children('input')[0].value)">
@@ -718,9 +777,9 @@
 					<br>
 				</form>
 				<div class="loading">
-					<br>
 					<div class="buffering" style="width: 128px; height: 128px;"></div>
 					<br>
+					<span class="message">Loading game assets</span>
 					<br>
 				</div>
 				<div class="disconnected" style="display: none;">
@@ -880,9 +939,10 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 		<script src="https://code.jquery.com/color/jquery.color.plus-names-2.1.2.min.js" integrity="sha256-Wp3wC/dKYQ/dCOUD7VUXXp4neLI5t0uUEF1pg0dFnAE=" crossorigin="anonymous"></script>
+		<script src="https://src.me1312.net/js/nosleep.min.js"></script>
 		<script>
 			function mobile() {
-				return $(window).width() <= 1280;
+				return $(window).width() <= 720;
 			}
 			window.onload = function() {
 				setInterval(function() {
@@ -1163,6 +1223,9 @@
 					SubDataClient.connect(window.location.hash.substr(1), "");
 				}
 			};
+			document.addEventListener('click', function() {
+				if (SubDataClient.connection != null) SubDataClient.sleeplock.enable();
+			}, false);
 			var cardcolor = {
 				RED: "#ff5555",
 				BLUE: "#5555ff",
@@ -1177,7 +1240,7 @@
 			var players = {};
 			function playerJoin(player) {
 				if (!players.hasOwnProperty(player.profile.name)) {
-					$('div.game > div.lobby ul').append('<li data-pid="' + player.profile.id + '"><div><div class="avatar"><div style="background-image: url(' + ((player.profile.image.isDefault)?'https://src.ME1312.net/img/avatar.inverted.svg':((player.profile.image.hasOwnProperty('xlurl')))?player.profile.image.xlurl:player.profile.image.url) + ')"></div></div><span class="name">' + player.profile.displayName + '</span><span class="tag">' + ((player.profile.name == '+' + player.profile.id)?'':'@') + player.profile.name + ((player.profile.name == '+' + player.profile.id)?'':'<span>#' + player.profile.id.toString(36).toUpperCase() + '</span>') + '</span><div class="stats"><span class="wins" title="Number of wins"><i class="fas fa-trophy"></i><span>' + player.stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span><span class="cardsdrawn" title="Number of cards drawn at once"><i class="fas fa-fire"></i><span>' + player.stats.consecutiveCardsDrawn.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span><span class="cardsplayed" title="Number of cards played"><div></div><span>' + player.stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span></div></div>');
+					$('div.game > div.lobby ul').append('<li data-pid="' + player.profile.id + '"><div><div class="avatar"><div style="background-image: url(' + ((player.profile.image.isDefault)?'https://src.ME1312.net/img/avatar.inverted.svg':((player.profile.image.hasOwnProperty('xlurl')))?player.profile.image.xlurl:player.profile.image.url) + ')"></div></div><span class="tag-container"><span class="name">' + player.profile.displayName + '</span><span class="tag">' + ((player.profile.name == '+' + player.profile.id)?'':'@') + player.profile.name + ((player.profile.name == '+' + player.profile.id)?'':'<span>#' + player.profile.id.toString(36).toUpperCase() + '</span>') + '</span></span><div class="stats"><span class="wins" title="Number of wins"><i class="fas fa-trophy"></i><span>' + player.stats.gamesWon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span><span class="cardsdrawn" title="Number of cards drawn at once"><i class="fas fa-fire"></i><span>' + player.stats.consecutiveCardsDrawn.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span><span class="cardsplayed" title="Number of cards played"><div></div><span>' + player.stats.cardsPlayed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</span></span></div></div>');
 					players[player.profile.name] = player;
 				}
 			}
@@ -1288,28 +1351,23 @@
 			
 			var SubDataClient = {
 				firstrun: true,
+				sleeplock: new NoSleep(),
 				connection: null,
 				connect: function(profile, password) {
 					if (SubDataClient.connection == null) {
-						var header = {
-							element: $("div.login span.page-subtitle > span"),
-							initalValue: $("div.login span.page-subtitle > span").html()
-						}
+						var header = $("div.login div.page > div.loading span.message");
 						$($("div.login div.page form.login").children("input")[0]).prop('disabled', true);
 						$($("div.login div.page form.login").children("button")[0]).prop('disabled', true);
-						header.element.fadeOut(50, function() {
-							header.element.html("Connecting to " + location.hostname+':'+((location.port)?location.port:'80'));
-							header.element.fadeIn(50);
+						header.fadeOut(50, function() {
+							header.html("Connecting to " + location.hostname+':'+((location.port)?location.port:'80'));
+							header.fadeIn(50);
 						})
 						$("div.login div.page form.login").fadeOut(150, function() {
 							$($("div.login div.page form.login").children(".response")[0]).html("");
 							$($($("div.login div.page form.login").parent()).children(".loading")[0]).fadeIn(150, function() {
 								var connection = new WebSocket("ws://" + location.hostname+':'+((location.port)?location.port:'80') + "/game");
 								connection.onerror = function() {
-									header.element.fadeOut(50, function() {
-										header.element.html(header.initalValue);
-										header.element.fadeIn(50);
-									});
+									SubDataClient.sleeplock.disable();
 									$($($("div.login div.page form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
 										$($("div.login div.page form.login").children("input")[0]).prop('disabled', false);
 										$($("div.login div.page form.login").children("button")[0]).prop('disabled', false);
@@ -1319,10 +1377,10 @@
 									});
 								};
 								connection.onopen = function() {
-									header.element.fadeOut(50, function() {
-										header.element.html("Logging into " + location.hostname+':'+((location.port)?location.port:'80'));
+									header.fadeOut(50, function() {
+										header.html("Logging into " + location.hostname+':'+((location.port)?location.port:'80'));
 										$("div.login div.page form.login").children("input")[0].value = "";
-										header.element.fadeIn(50, function() {
+										header.fadeIn(50, function() {
 											setTimeout(function() {
 												SubDataClient.connection = connection;
 												SubDataClient.send(SubDataClient.Protocol.authorization.out(profile, password, function(data) {
@@ -1332,9 +1390,9 @@
 															connection.send(SubDataClient.queue[0]);
 															SubDataClient.queue.splice(0, 1);
 														}
-														header.element.fadeOut(50, function() {
-															header.element.html("Downloading Page Content");
-															header.element.fadeIn(50, function() {
+														header.fadeOut(50, function() {
+															header.html("Downloading Page Content");
+															header.fadeIn(50, function() {
 																setTimeout(function() {
 																	self = data.m;
 																	SubDataClient.send(SubDataClient.Protocol.playerlist.out(function(data) {
@@ -1374,10 +1432,7 @@
 									SubDataClient.Protocol[json.h].in(json.c);
 								};
 								connection.onclose = function(event) {
-									header.element.fadeOut(50, function() {
-										header.element.html(header.initalValue);
-										header.element.fadeIn(50);
-									});
+									SubDataClient.sleeplock.disable();
 									$($($("div.login div.page form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
 										$($("div.login div.page form.login").children("input")[0]).prop('disabled', false);
 										$($("div.login div.page form.login").children("button")[0]).prop('disabled', false);
