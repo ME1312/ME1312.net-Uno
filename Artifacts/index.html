@@ -809,7 +809,7 @@
 				<div class="disconnected" style="display: none;">
 					<span class="response">You have been disconnected</span><br>
 					<br>
-					<button onclick="window.location.href = 'https://www.me1312.net/account/setup/eauth/#return=' + encodeURIComponent('http://' + location.hostname+':'+((location.port)?location.port:'80') + '#');">Reconnect</button>
+					<button onclick="window.location.replace('https://www.me1312.net/account/setup/eauth/#return=' + encodeURIComponent('http://' + location.hostname+':'+((location.port)?location.port:'80') + '#'));">Reconnect</button>
 					<br>
 					<br>
 					<br>
@@ -1013,7 +1013,7 @@
 				});
 				
 				if (window.location.hash.length <= 1) {
-					window.location.href = "https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#');
+					window.location.replace("https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#'));
 				} else {
 					var join = function(data) {
 						playerJoin(data.player);
@@ -1413,7 +1413,7 @@
 												SubDataClient.connection = connection;
 												SubDataClient.send(SubDataClient.Protocol.authorization.out(profile, password, function(data) {
 													if (data.r == 0) {
-														window.location.hash = "";
+														window.history.replaceState(undefined, undefined, "#");
 														while (SubDataClient.queue.length != 0) {
 															connection.send(SubDataClient.queue[0]);
 															SubDataClient.queue.splice(0, 1);
@@ -1435,7 +1435,7 @@
 														});
 													} else if (data.r == 3) {
 														connection.close();
-														window.location.href = "https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#');
+														window.location.replace("https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#'));
 													} else {
 														if ((data.r == 4)) {
 															$($('div.login div.page div.disconnected').children('.response')).html("You are already logged into this server");
