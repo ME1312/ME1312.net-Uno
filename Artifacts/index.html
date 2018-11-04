@@ -754,6 +754,7 @@
 								<div>
 									<a class="autosort active" title="Auto Sort" href="javascript:void(0)" onclick="toggleAutoSort()" draggable="false"></a>
 									<div class="cards"><!--
+										--><span class="group usable"></span><!--
 										--><span class="group black"><!--
 											--><span class="group -3"></span><!--
 											--><span class="group -2"></span><!--
@@ -1013,9 +1014,11 @@
 							for (var i = 0; i < data.cards.length; i++) {
 								$('.card[data-cid=' + data.cards[i] + ']').addClass('active');
 							}
+							if (mobile()) findActiveCards();
 						} else {
 							$('div.game > div.game div.table > div.deck').removeClass('active');
 							$('div.game > div.game div.hand > div > div.cards div.card').removeClass('active');
+							if (mobile()) findActiveCards();
 						}
 						SubDataClient.Protocol.beginturn.callbacks.push(beginturn);
 					}
@@ -1118,6 +1121,7 @@
 						$('div.game > div.game div.hand > div > div.cards div.card').removeClass('active');
 						$('div.game > div.game div.table > div.deck').removeClass('active');
 						$('div.game > div.game div.wheel').hide();
+						if (mobile()) findActiveCards();
 						SubDataClient.Protocol.endturn.callbacks.push(endturn);
 					}
 					SubDataClient.Protocol.endturn.callbacks.push(endturn);
@@ -1196,6 +1200,32 @@
 					window.resizeBy(384, 0);
 					$('div.chat').show();
 					$('div.chat > ul')[0].scrollTop = $('div.chat > ul')[0].scrollHeight;
+				}
+			}
+			
+			function findActiveCards() {
+				$('div.game > div.game div.hand > div > div.cards > .group.usable div.card').each(function(i, e) {
+					var element = $(e).detach();
+					element.appendTo('div.game > div.game div.hand > div > div.cards > .group.'+element.data('ccolor').toLowerCase()+' > .group.'+element.data('cnumber'));
+				});
+				var ids = [];
+				var cards = {};
+				var get = function(i, e) {
+				var element = $(e).detach();
+					ids.push(parseInt(element.data('cid')));
+					cards[parseInt(element.data('cid'))] = element;
+				}
+				$('div.game > div.game div.hand > div > div.cards > * > div.card').each(get);
+				$('div.game > div.game div.hand > div > div.cards > * > * > div.card').each(get);
+				ids.reverse();
+				for (var i = 0; i < ids.length; i++) {
+					if (cards[ids[i]].hasClass('active')) {
+						cards[ids[i]].prependTo('div.game > div.game div.hand > div > div.cards > .group.usable');
+					} else if ($('div.game > div.game div.hand > div > a.autosort').hasClass('active')) {
+						cards[ids[i]].appendTo('div.game > div.game div.hand > div > div.cards > .group.'+cards[ids[i]].data('ccolor').toLowerCase()+' > .group.'+cards[ids[i]].data('cnumber'));
+					} else {
+						cards[ids[i]].prependTo('div.game > div.game div.hand > div > div.cards > .group.unsorted');
+					}
 				}
 			}
 			
