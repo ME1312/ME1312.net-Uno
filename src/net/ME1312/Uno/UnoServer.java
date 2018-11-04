@@ -23,7 +23,7 @@ import java.util.*;
 /**
  * Uno Main Class
  */
-@Plugin(name = "UnoServer", version = "1.2a", authors = "ME1312", description = "Play Uno through ME1312.net", website = "https://www.me1312.net/uno")
+@Plugin(name = "UnoServer", version = "1.2b", authors = "ME1312", description = "Play Uno through ME1312.net", website = "https://www.me1312.net/uno")
 public final class UnoServer {
     public List<GameRule> rules = new ArrayList<GameRule>();
     public LinkedHashMap<String, Player> players = new LinkedHashMap<String, Player>();

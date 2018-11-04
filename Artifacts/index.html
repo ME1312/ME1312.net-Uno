@@ -40,7 +40,7 @@
 				width: 100%;
 				height: 100%;
 			}
-			div.page {
+			body > div.page {
 				display: inline-flex;
 				position: fixed;
 				top: 0;
@@ -48,7 +48,7 @@
 				left: 0;
 				right: 0;
 			}
-			div.page > div {
+			body > div.page > div {
 				position: relative;
 				flex-grow: 1;
 				flex-shrink: 0;
@@ -59,14 +59,14 @@
 			div.game > div.winner {
 				position: absolute;
 				z-index: 9998;
-				background: #222;
+				background: #EEE;
 				top: 0;
 				bottom: 0;
 				left: 0;
 				right: 0;
 			}
 			div.login {
-				position: fixed;
+				margin: 0px !important;
 			}
 			div.game {
 				z-index: 1;
@@ -77,42 +77,33 @@
 				z-index: -1;
 				overflow: visible;
 			}
-			div.login > div {
-				position: fixed;
-				top: 4%;
-				left: 50%;
-  				transform: translate(-50%, 0);
-				z-index: 9999;
-            	background: #EEE;
-            	border: 1px solid #D5D5D6;
-            	border-top-color: #E0E1E2;
-            	border-bottom-color: #C0C1C2;
-            	margin: 0px auto 0px auto;
-            	padding: 0px;
-				padding-top: 20px;
-            	width: 730px;
-            	box-shadow: 0px 1px 3px rgba(0,0,0,0.1);
-        	}
-			div.login > div div.header a {
-				text-decoration: underline;
+			div.login span.page-title {
+				display: block;
+				vertical-align: middle;
+				margin: 0;
+    			margin-top: 0.83em;
+				font-size: 1.125em;
+    			font-weight: bold;
 			}
-			div.login > div div.header h2 {
-				margin-top: 0px;
-				margin-bottom: 0px;
+			div.login span.page-subtitle {
+				display: block;
+				vertical-align: middle;
+				margin: 0.125em 0;
+    			margin-bottom: 0.83em;
+				font-size: 1em;
 			}
-			div.login > div div.header p {
-				margin-top: 0px;
-				color: rgb(125,125,125);
-				white-space: pre-line
+			div.login span.page-subtitle {
+				font-weight: normal;
+				font-size: 1em;
 			}
-			div.login > div span.response {
+			div.login div.page span.response {
 				color: #D00;
 			}
 			
 			div.chat > form button,
-			div.login > div button,
+			div.login div.page button,
 			div.chat > form input,
-			div.login > div form input {
+			div.login div.page form input {
 				display: inline-block;
 				background-color: #DDD;
 				margin-bottom: 0;
@@ -137,22 +128,22 @@
 				cursor: pointer;
 				}
 			div.chat > form input,
-			div.login > div form input {
+			div.login div.page form input {
 				background-color: #FFF;
 				text-align: left;
 				cursor: text;
 			}
 			div.chat > form input:focus,
-			div.login > div form input:focus {
+			div.login div.page form input:focus {
 				outline: none;
 			}
 			div.chat > form button,
-			div.login > div button {
+			div.login div.page button {
 				color: #fff;
 				background-color: #1b6dff;
 			}
 			div.chat > form button:hover,
-			div.login > div button:hover {
+			div.login div.page button:hover {
 				background-color: #003acc;
 			}
 			div.game > a.chat,
@@ -215,6 +206,7 @@
 				max-width: 350px;
 				max-height: 200px;
 			}
+			
 			div.game > div.lobby div.players {
 				background-color: rgba(0,0,0,.15);
 				padding: 15px 0px;
@@ -627,44 +619,120 @@
 			div.chat > form > input {
 				flex-grow: 1;
 			}
+			@media only screen and (max-width:1024px) {
+			    div.login span.page-title {
+					font-size: 0.83em;
+			    }
+			    div.login span.page-subtitle {
+					font-size: 0.67em;
+			    }
+				div.game > a.chat,
+				div.game > div.lobby div.players,
+				div.game > div.game div.hand > div > a.autosort {
+					display: none;
+				}
+				div.game > div.game div.card {
+					width: 33.2vw;
+					height: 50vw;
+					border-radius: 6vw;
+				}
+				div.game > div.game h1.message {
+					font-size: 16pt;
+				}
+				div.game > div.game div.table > div.deck {
+					width: 40.8vw;
+					height: 60vw;
+				}
+				div.game > div.game div.table > div.card {
+					width: 39.84vw;
+					height: 60vw;
+					border-radius: 7.2vw;
+				}
+				div.game > div.game div.hand {
+					min-height: 33.2vw;
+				}
+				div.game > div.game div.hand > div > div.cards {
+					padding-top: 2vw;
+				}
+				div.game > div.game div.hand > div > div.cards div.card {
+					margin-right: -18vw;
+					margin-bottom: -20vw;
+				}
+				div.game > div.game div.hand > div > div.cards div.card.active:hover {
+					top: initial;
+				}
+				div.game > div.game div.hand > div > div.cards > div.spacer {
+					width: 18vw;
+				}
+				div.game > div.game div.wheel > div > div {
+					display: inline-block;
+					position: relative;
+					width: 25vw;
+					height: 25vw;
+					cursor: pointer;
+				}
+				div.game > div.game div.wheel > div > div.red {
+					background-color: #ff5555;
+					border-top-left-radius: 20vw;
+				}
+				div.game > div.game div.wheel > div > div.blue {
+					background-color: #5555ff;
+					border-top-right-radius: 20vw;
+				}
+				div.game > div.game div.wheel > div > div.green {
+					background-color: #55aa55;
+					border-bottom-right-radius: 20vw;
+					top: -5px;
+				}
+				div.game > div.game div.wheel > div > div.yellow {
+					background-color: #ffaa00;
+					border-bottom-left-radius: 20vw;
+					top: -5px;
+				}
+				div.game > div.winner > div > div > div > img {
+					width: 50vw;
+					height: 50vw;
+				}
+				div.game > div.winner > div > div > h1 {
+					font-size: 16pt;
+				}
+				div.chat {
+					display: none;
+				}
+			}
 			@font-face {
     			font-family: Avenir;
     			src: url("https://src.me1312.net/css/font/AvenirLTStd-Roman.otf");
 			}
 		</style>
-		<div class="login">
-			<div>
-				<center>
-					<div class="header">
-						<h2>ME1312.net Uno</h2>
-						<p>ME1312.net Uno Client v1.2a</p>
-						<hr>
-					</div>
+		<div class="login"><center>
+			<span class="page-title">ME1312.net Uno</span><span class="page-subtitle"><span>ME1312.net Uno Client v1.2b</span><hr></span>
+			<br>
+			<div class="page">
+				<form class="login" style="display: none;" enctype="multipart/form-data" onSubmit="return SubDataClient.connect(window.location.hash.substr(1), $(this).children('input')[0].value)">
+					<span class="response"><span style="color: black;">This server requires a password</span></span><br>
 					<br>
-					<form class="login" style="display: none;" enctype="multipart/form-data" onSubmit="return SubDataClient.connect(window.location.hash.substr(1), $(this).children('input')[0].value)">
-						<span class="response"><span style="color: black;">This server requires a password</span></span><br>
-						<br>
-						<input type="password" placeholder="Password"/><button>Join</button>
-						<br>
-						<br>
-						<br>
-					</form>
-					<div class="loading">
-						<div class="buffering" style="width: 128px; height: 128px;"></div>
-						<br>
-						<br>
-					</div>
-					<div class="disconnected" style="display: none;">
-						<span class="response">You have been disconnected</span><br>
-						<br>
-						<button onclick="window.location.href = 'https://www.me1312.net/account/setup/eauth/#return=' + encodeURIComponent('http://' + location.hostname+':'+((location.port)?location.port:'80') + '#');">Reconnect</button>
-						<br>
-						<br>
-						<br>
-					</div>
-				</center>
+					<input type="password" placeholder="Password"/><button>Join</button>
+					<br>
+					<br>
+					<br>
+				</form>
+				<div class="loading">
+					<br>
+					<div class="buffering" style="width: 128px; height: 128px;"></div>
+					<br>
+					<br>
+				</div>
+				<div class="disconnected" style="display: none;">
+					<span class="response">You have been disconnected</span><br>
+					<br>
+					<button onclick="window.location.href = 'https://www.me1312.net/account/setup/eauth/#return=' + encodeURIComponent('http://' + location.hostname+':'+((location.port)?location.port:'80') + '#');">Reconnect</button>
+					<br>
+					<br>
+					<br>
+				</div>
 			</div>
-		</div>
+		</center></div>
 		<div class="page">
 			<div>
 				<div class="game">
@@ -812,6 +880,9 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 		<script src="https://code.jquery.com/color/jquery.color.plus-names-2.1.2.min.js" integrity="sha256-Wp3wC/dKYQ/dCOUD7VUXXp4neLI5t0uUEF1pg0dFnAE=" crossorigin="anonymous"></script>
 		<script>
+			function mobile() {
+				return $(window).width() <= 1280;
+			}
 			window.onload = function() {
 				setInterval(function() {
 					if ($('div.game > div.winner').is(':visible')) {
@@ -830,6 +901,10 @@
 				setInterval(function() {
 					if (SubDataClient.connection != null) SubDataClient.send(SubDataClient.Protocol.keepalive.out());
 				}, 30000);
+				
+				try {
+					screen.lockOrientationUniversal("portrait");
+				} catch (e) {}
 				
 				$('body > div.preload').remove();
 				$('div.game > div.game div.hand > div > div.cards > .group.unsorted').sortable({
@@ -851,7 +926,6 @@
 				if (window.location.hash.length <= 1) {
 					window.location.href = "https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#');
 				} else {
-					
 					var join = function(data) {
 						playerJoin(data.player);
 						SubDataClient.Protocol.playerjoin.callbacks.push(join);
@@ -970,15 +1044,15 @@
 						$('div.game > div.game div.table > div.card').css({
 							"background-image": "url(https://www.me1312.net/uno/assets/" + data.card.number + ".png)",
 							"background-color": cardcolor[data.card.color],
-							"width": "180px",
-							"height": "270px",
+							"width": (mobile())?"43.2vw":"180px",
+							"height": (mobile())?"64.8vw":"270px",
 							"margin-left": "0px",
 							"margin-right": "0px",
 							"top": "-15px"
 						});
 						$('div.game > div.game div.table > div.card').animate({
-							"width": "166px",
-							"height": "250px",
+							"width": (mobile())?"39.84vw":"166px",
+							"height":  (mobile())?"60vw":"250px",
 							"margin-left": "7px",
 							"margin-right": "7px",
 							"top": "0px"
@@ -1188,28 +1262,28 @@
 				connect: function(profile, password) {
 					if (SubDataClient.connection == null) {
 						var header = {
-							element: $("div.login > div div.header p"),
-							initalValue: $("div.login > div div.header p").html()
+							element: $("div.login span.page-subtitle > span"),
+							initalValue: $("div.login span.page-subtitle > span").html()
 						}
-						$($("div.login > div form.login").children("input")[0]).prop('disabled', true);
-						$($("div.login > div form.login").children("button")[0]).prop('disabled', true);
+						$($("div.login div.page form.login").children("input")[0]).prop('disabled', true);
+						$($("div.login div.page form.login").children("button")[0]).prop('disabled', true);
 						header.element.fadeOut(50, function() {
 							header.element.html("Connecting to " + location.hostname+':'+((location.port)?location.port:'80'));
 							header.element.fadeIn(50);
 						})
-						$("div.login > div form.login").fadeOut(150, function() {
-							$($("div.login > div form.login").children(".response")[0]).html("");
-							$($($("div.login > div form.login").parent()).children(".loading")[0]).fadeIn(150, function() {
+						$("div.login div.page form.login").fadeOut(150, function() {
+							$($("div.login div.page form.login").children(".response")[0]).html("");
+							$($($("div.login div.page form.login").parent()).children(".loading")[0]).fadeIn(150, function() {
 								var connection = new WebSocket("ws://" + location.hostname+':'+((location.port)?location.port:'80') + "/game");
 								connection.onerror = function() {
 									header.element.fadeOut(50, function() {
 										header.element.html(header.initalValue);
 										header.element.fadeIn(50);
 									});
-									$($($("div.login > div form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
-										$($("div.login > div form.login").children("input")[0]).prop('disabled', false);
-										$($("div.login > div form.login").children("button")[0]).prop('disabled', false);
-										if (!$("div.login > div form.login").is(":visible")) $("div.login > div div.disconnected").fadeIn(150);
+									$($($("div.login div.page form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
+										$($("div.login div.page form.login").children("input")[0]).prop('disabled', false);
+										$($("div.login div.page form.login").children("button")[0]).prop('disabled', false);
+										if (!$("div.login div.page form.login").is(":visible")) $("div.login div.page div.disconnected").fadeIn(150);
 										SubDataClient.connection = null;
 										$("div.login").fadeIn(500);
 									});
@@ -1217,7 +1291,7 @@
 								connection.onopen = function() {
 									header.element.fadeOut(50, function() {
 										header.element.html("Logging into " + location.hostname+':'+((location.port)?location.port:'80'));
-										$("div.login > div form.login").children("input")[0].value = "";
+										$("div.login div.page form.login").children("input")[0].value = "";
 										header.element.fadeIn(50, function() {
 											setTimeout(function() {
 												SubDataClient.connection = connection;
@@ -1228,9 +1302,9 @@
 															connection.send(SubDataClient.queue[0]);
 															SubDataClient.queue.splice(0, 1);
 														}
-														$("div.login > div div.header p").fadeOut(50, function() {
-															$("div.login > div div.header p").html("Downloading Page Content");
-															$("div.login > div div.header p").fadeIn(50, function() {
+														header.element.fadeOut(50, function() {
+															header.element.html("Downloading Page Content");
+															header.element.fadeIn(50, function() {
 																setTimeout(function() {
 																	self = data.m;
 																	SubDataClient.send(SubDataClient.Protocol.playerlist.out(function(data) {
@@ -1248,12 +1322,12 @@
 														window.location.href = "https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#');
 													} else {
 														if ((data.r == 4)) {
-															$($('div.login > div div.disconnected').children('.response')).html("You are already logged into this server");
+															$($('div.login div.page div.disconnected').children('.response')).html("You are already logged into this server");
 															connection.close();
 														} else {
-															$($("div.login > div form.login").children(".response")[0]).html((SubDataClient.firstrun)?"<span style=\"color: black;\">This server requires a password</span>":"That was the wrong password");
-															$($($("div.login > div form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
-																$("div.login > div form.login").fadeIn(150);
+															$($("div.login div.page form.login").children(".response")[0]).html((SubDataClient.firstrun)?"<span style=\"color: black;\">This server requires a password</span>":"That was the wrong password");
+															$($($("div.login div.page form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
+																$("div.login div.page form.login").fadeIn(150);
 																$("div.login").fadeIn(500);
 																connection.close();
 															});
@@ -1274,10 +1348,10 @@
 										header.element.html(header.initalValue);
 										header.element.fadeIn(50);
 									});
-									$($($("div.login > div form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
-										$($("div.login > div form.login").children("input")[0]).prop('disabled', false);
-										$($("div.login > div form.login").children("button")[0]).prop('disabled', false);
-										if (!$("div.login > div form.login").is(":visible")) $("div.login > div div.disconnected").fadeIn(150);
+									$($($("div.login div.page form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
+										$($("div.login div.page form.login").children("input")[0]).prop('disabled', false);
+										$($("div.login div.page form.login").children("button")[0]).prop('disabled', false);
+										if (!$("div.login div.page form.login").is(":visible")) $("div.login div.page div.disconnected").fadeIn(150);
 										SubDataClient.connection = null;
 										$("div.login").fadeIn(500);
 									});
