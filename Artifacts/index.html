@@ -80,7 +80,7 @@
 			div.login span.page-title {
 				display: block;
 				vertical-align: middle;
-    			margin: 0.83em 0px;
+				margin: 0.83em 0px;
 				font-size: 1.5em;
     			font-weight: bold;
 			}
@@ -352,7 +352,7 @@
 				width: 154px;
 				height: 75px;
 				vertical-align: bottom;
-				overflow-y: hidden;
+				overflow: hidden;
 				cursor: pointer;
 				
 				-webkit-transition: all 0.15s ease-in-out;
@@ -631,12 +631,18 @@
 			div.chat > form > input {
 				flex-grow: 1;
 			}
-			@media only screen and (max-width:1280px) {
+			@media only screen and (max-width:1279px) {
+				div.chat,
+				div.game > a.chat {
+					display: none;
+				}
+			}
+			@media only screen and (max-width:719px) {
 			    div.login span.page-title {
 					font-size: 0.83em;
 			    }
-				div.game > a.chat,
-				div.game > div.game div.hand > div > a.autosort {
+				div.game > div.game div.hand > div > a.autosort,
+				div.game > div.lobby div.players > ul > li > div .stats {
 					display: none;
 				}
 				div.game > div.lobby div.players {
@@ -680,7 +686,7 @@
 				}
 				div.game > div.lobby div.players > ul > li > div .tag-container {
 					display: inline-block;
-    				margin-top: 5px;
+					margin-top: 5px;
 					margin-left: 4px;
 				}
 				div.game > div.lobby div.players > ul > li > div .name {
@@ -692,15 +698,12 @@
 				}
 				div.game > div.lobby div.players > ul > li > div .tag {
 					display: block;
-					color: #BBB;
+					color: #DDD;
 					margin-bottom: 0px;
 				}
 				div.game > div.lobby div.players > ul > li > div .tag > span {
 					font-size: 9pt;
-					color: #777;
-				}
-				div.game > div.lobby div.players > ul > li > div .stats {
-					display: none;
+					color: #BBB;
 				}
 				div.game > div.game div.players > div {
 					width: 58px;
@@ -779,9 +782,6 @@
 				}
 				div.game > div.winner > div > div > h1 {
 					font-size: 16pt;
-				}
-				div.chat {
-					display: none;
 				}
 			}
 			@font-face {
@@ -971,7 +971,7 @@
 		<script src="https://src.me1312.net/js/nosleep.min.js"></script>
 		<script>
 			function mobile() {
-				return $(window).width() <= 1280;
+				return $(window).width() <= 719;
 			}
 			window.onload = function() {
 				setInterval(function() {
