@@ -656,6 +656,7 @@
 					border-top: rgba(0, 0, 0, .125) 1px solid;
 				}
 				div.game > div.lobby div.players > ul > li > div {
+					display: inline-flex;
 					background-color: transparent;
 					border-radius: 0px;
 					width: 100%;
@@ -670,6 +671,7 @@
 					top: 2px;
 					width: 50px;
 					padding: 0px;
+					flex-shrink: 0;
 				}
 				div.game > div.lobby div.players > ul > li > div .avatar > div {
 					border-radius: 0px;
@@ -678,9 +680,8 @@
 				}
 				div.game > div.lobby div.players > ul > li > div .tag-container {
 					display: inline-block;
+    				margin-top: 5px;
 					margin-left: 4px;
-					position: absolute;
-    				top: 5px;
 				}
 				div.game > div.lobby div.players > ul > li > div .name {
 					font-size: 18pt;
