@@ -642,13 +642,17 @@
 					font-size: 0.83em;
 			    }
 				div.game > div.game div.hand > div > a.autosort,
-				div.game > div.lobby div.players > ul > li > div .stats {
+				div.game > div.lobby div.players > ul > li > div .stats,
+				div.game > div.lobby div.title > img:first-child {
 					display: none;
+				}
+				div.game > div.lobby div.title > img {
+					top: 20px;
 				}
 				div.game > div.lobby div.players {
 					padding: 0px;
 					top: initial;
-					overflow: auto;
+					max-height: 100%;
 				}
 				div.game > div.lobby div.players > ul {
 					display: block;
@@ -781,7 +785,7 @@
 					height: 50vw;
 				}
 				div.game > div.winner > div > div > h1 {
-					font-size: 16pt;
+					font-size: 6vw;
 				}
 			}
 			@font-face {

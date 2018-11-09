@@ -50,5 +50,6 @@ crashlytics-build.properties
 /Artifacts/config.yml
 /Artifacts/launch.bat
 /Artifacts/loop.bat
+/Artifacts/UnoServer.jar
 .DS_STORE
 .alias
