@@ -14,12 +14,12 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketSe
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
-import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
 import net.ME1312.Galaxi.Library.Container;
 import net.ME1312.Galaxi.Library.Log.Logger;
+import net.ME1312.Galaxi.Library.Util;
 import net.ME1312.Galaxi.Library.Version.Version;
 import net.ME1312.Uno.Library.Exception.IllegalPacketException;
-import net.ME1312.Uno.Library.Util;
 import net.ME1312.Uno.Network.Packet.*;
 import net.ME1312.Uno.UnoServer;
 import org.json.JSONObject;
@@ -351,14 +351,14 @@ public final class SubDataServer {
      * @return JSON Formatted Packet
      * @throws IllegalPacketException
      */
-    protected static YAMLSection encodePacket(Client client, PacketOut packet) throws IllegalPacketException, InvocationTargetException {
-        YAMLSection section = new YAMLSection();
+    protected static ObjectMap<String> encodePacket(Client client, PacketOut packet) throws IllegalPacketException, InvocationTargetException {
+        ObjectMap<String> section = new ObjectMap<String>();
 
         if (!pOut.keySet().contains(packet.getClass())) throw new IllegalPacketException(packet.getClass().getCanonicalName() + ": Unknown PacketOut Channel: " + packet.getClass().getCanonicalName());
         if (packet.getVersion().toString() == null) throw new NullPointerException(packet.getClass().getCanonicalName() + ": PacketOut getVersion() cannot be null: " + packet.getClass().getCanonicalName());
 
         try {
-            YAMLSection contents = packet.generate();
+            ObjectMap<String> contents = packet.generate();
             section.set("h", pOut.get(packet.getClass()));
             section.set("v", packet.getVersion().toString());
             if (contents != null) section.set("c", contents);
@@ -375,7 +375,7 @@ public final class SubDataServer {
      * @return PacketIn
      * @throws IllegalPacketException
      */
-    protected static List<PacketIn> decodePacket(Client client, YAMLSection data) throws IllegalPacketException {
+    protected static List<PacketIn> decodePacket(Client client, ObjectMap<String> data) throws IllegalPacketException {
         if (!data.contains("h") || !data.contains("v")) throw new IllegalPacketException(client.getAddress().toString() + ": Unknown Packet Format: " + data.toString());
         if (!pIn.keySet().contains(data.getRawString("h"))) throw new IllegalPacketException(client.getAddress().toString() + ": Unknown PacketIn Channel: " + data.getRawString("h"));
 

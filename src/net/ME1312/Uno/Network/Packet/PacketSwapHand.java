@@ -1,6 +1,6 @@
 package net.ME1312.Uno.Network.Packet;
 
-import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
 import net.ME1312.Galaxi.Library.Version.Version;
 import net.ME1312.Uno.Game.Player;
 import net.ME1312.Uno.Network.Client;
@@ -16,12 +16,12 @@ public class PacketSwapHand implements PacketIn, PacketOut {
     }
 
     @Override
-    public YAMLSection generate() throws Throwable {
+    public ObjectMap<String> generate() throws Throwable {
         return null;
     }
 
     @Override
-    public void execute(Client client, YAMLSection data) throws Throwable {
+    public void execute(Client client, ObjectMap<String> data) throws Throwable {
         if (server.game != null && client.getHandler() instanceof Player && ((Player) client.getHandler()).isPlaying() && server.game.getCurrentPlayer() == client.getHandler()) {
             server.game.swapHands((Player) client.getHandler(), server.players.get(data.getString("player")));
         }

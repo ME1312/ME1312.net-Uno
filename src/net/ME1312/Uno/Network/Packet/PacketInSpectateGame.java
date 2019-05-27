@@ -1,6 +1,6 @@
 package net.ME1312.Uno.Network.Packet;
 
-import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
 import net.ME1312.Galaxi.Library.Version.Version;
 import net.ME1312.Uno.Game.Player;
 import net.ME1312.Uno.Network.Client;
@@ -15,7 +15,7 @@ public class PacketInSpectateGame implements PacketIn {
     }
 
     @Override
-    public void execute(Client client, YAMLSection data) throws Throwable {
+    public void execute(Client client, ObjectMap<String> data) throws Throwable {
         if (server.game != null && client.getHandler() instanceof Player && !((Player) client.getHandler()).isPlaying()) {
             server.game.addSpectator((Player) client.getHandler());
         }

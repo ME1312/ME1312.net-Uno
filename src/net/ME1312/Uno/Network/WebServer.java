@@ -13,7 +13,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.util.CharsetUtil;
 import net.ME1312.Galaxi.Engine.GalaxiEngine;
-import net.ME1312.Uno.Library.Util;
+import net.ME1312.Galaxi.Library.Util;
 import net.ME1312.Uno.UnoServer;
 
 import java.io.*;

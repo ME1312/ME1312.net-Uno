@@ -1,6 +1,6 @@
 package net.ME1312.Uno.Network.Packet;
 
-import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
 import net.ME1312.Galaxi.Library.Version.Version;
 import net.ME1312.Uno.Game.Card;
 import net.ME1312.Uno.Game.Player;
@@ -26,10 +26,10 @@ public class PacketPlayCard implements PacketIn, PacketOut {
     }
 
     @Override
-    public YAMLSection generate() throws Throwable {
-        YAMLSection info = new YAMLSection();
+    public ObjectMap<String> generate() throws Throwable {
+        ObjectMap<String> info = new ObjectMap<String>();
         info.set("player", player.getProfile().getString("name"));
-        YAMLSection cardinfo = new YAMLSection();
+        ObjectMap<String> cardinfo = new ObjectMap<String>();
         cardinfo.set("color", card.getColor().toString());
         cardinfo.set("number", card.getNumber());
         cardinfo.set("id", id);
@@ -38,7 +38,7 @@ public class PacketPlayCard implements PacketIn, PacketOut {
     }
 
     @Override
-    public void execute(Client client, YAMLSection data) throws Throwable {
+    public void execute(Client client, ObjectMap<String> data) throws Throwable {
         if (server.game != null && client.getHandler() instanceof Player && ((Player) client.getHandler()).isPlaying() && server.game.getCurrentPlayer() == client.getHandler()) {
             server.game.play(data.getString("card"));
         }

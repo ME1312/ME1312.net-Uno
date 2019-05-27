@@ -3,8 +3,9 @@ package net.ME1312.Uno.Network;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
+import net.ME1312.Galaxi.Library.Util;
 import net.ME1312.Uno.Library.Exception.IllegalPacketException;
-import net.ME1312.Uno.Library.Util;
 import net.ME1312.Uno.Network.Packet.PacketAuthorization;
 import net.ME1312.Uno.Network.Packet.PacketMessage;
 import org.json.JSONException;
@@ -76,14 +77,14 @@ public class Client {
                                 }
                             }
                         } else {
-                            packet.execute(Client.this, (data.contains("c")) ? data.getSection("c") : null);
+                            packet.execute(Client.this, (data.contains("c")) ? data.getMap("c") : null);
                         }
                     } catch (Throwable e) {
                         new InvocationTargetException(e, getAddress().toString() + ": Exception while executing PacketIn").printStackTrace();
                     }
                 } else {
                     sendPacket(new PacketAuthorization(-1, "Unauthorized"));
-                    throw new IllegalPacketException(getAddress().toString() + ": Unauthorized call to packet type: " + data.getSection("h"));
+                    throw new IllegalPacketException(getAddress().toString() + ": Unauthorized call to packet type: " + data.getMap("h"));
                 }
             }
         } catch (JSONException | YAMLException e) {
@@ -118,7 +119,7 @@ public class Client {
     public void sendPacket(PacketOut packet) {
         if (Util.isNull(packet)) throw new NullPointerException();
         try {
-            channel.write(new TextWebSocketFrame(SubDataServer.encodePacket(this, packet).toJSON().toString()));
+            channel.write(new TextWebSocketFrame(new YAMLSection(SubDataServer.encodePacket(this, packet)).toJSON().toString()));
             channel.flush();
         } catch (Throwable e) {
             subdata.log.error.println(e);

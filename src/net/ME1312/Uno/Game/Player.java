@@ -2,7 +2,7 @@ package net.ME1312.Uno.Game;
 
 import net.ME1312.Galaxi.Engine.GalaxiEngine;
 import net.ME1312.Galaxi.Library.UniversalFile;
-import net.ME1312.Uno.Library.Util;
+import net.ME1312.Galaxi.Library.Util;
 import net.ME1312.Uno.Network.Client;
 import net.ME1312.Uno.Network.ClientHandler;
 import net.ME1312.Uno.Network.Packet.PacketOutAddCard;

@@ -1,6 +1,6 @@
 package net.ME1312.Uno.Network.Packet;
 
-import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
 import net.ME1312.Galaxi.Library.Version.Version;
 import net.ME1312.Uno.Game.Player;
 import net.ME1312.Uno.Network.PacketOut;
@@ -17,8 +17,8 @@ public class PacketOutUpdateStat implements PacketOut {
     }
 
     @Override
-    public YAMLSection generate() throws Throwable {
-        YAMLSection info = new YAMLSection();
+    public ObjectMap<String> generate() throws Throwable {
+        ObjectMap<String> info = new ObjectMap<String>();
         info.set("player", player.getProfile().getString("name"));
         info.set("stat", stat);
         info.set("value", value);

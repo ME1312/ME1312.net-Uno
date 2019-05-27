@@ -1,6 +1,6 @@
 package net.ME1312.Uno.Network.Packet;
 
-import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
 import net.ME1312.Galaxi.Library.Version.Version;
 import net.ME1312.Uno.Network.Client;
 import net.ME1312.Uno.Network.PacketIn;
@@ -9,12 +9,12 @@ import net.ME1312.Uno.Network.PacketOut;
 public class PacketKeepAlive implements PacketIn, PacketOut {
 
     @Override
-    public void execute(Client client, YAMLSection data) throws Throwable {
+    public void execute(Client client, ObjectMap<String> data) throws Throwable {
         client.sendPacket(this);
     }
 
     @Override
-    public YAMLSection generate() throws Throwable {
+    public ObjectMap<String> generate() throws Throwable {
         return null;
     }
 

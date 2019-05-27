@@ -1,6 +1,6 @@
 package net.ME1312.Uno.Network.Packet;
 
-import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
 import net.ME1312.Galaxi.Library.Version.Version;
 import net.ME1312.Uno.Game.Card;
 import net.ME1312.Uno.Game.Player;
@@ -22,11 +22,11 @@ public class PacketOutAddCard implements PacketOut {
     }
 
     @Override
-    public YAMLSection generate() throws Throwable {
-        YAMLSection info = new YAMLSection();
+    public ObjectMap<String> generate() throws Throwable {
+        ObjectMap<String> info = new ObjectMap<String>();
         info.set("player", player.getProfile().getString("name"));
         if (id != null) {
-            YAMLSection cardinfo = new YAMLSection();
+            ObjectMap<String> cardinfo = new ObjectMap<String>();
             cardinfo.set("color", card.getColor().toString());
             cardinfo.set("number", card.getNumber());
             cardinfo.set("id", id);

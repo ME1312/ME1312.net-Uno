@@ -6,7 +6,6 @@ import net.ME1312.Uno.Game.Card;
 import net.ME1312.Uno.Game.Game;
 import net.ME1312.Uno.Game.GameRule;
 import net.ME1312.Uno.Game.Player;
-import net.ME1312.Uno.Library.Util;
 import net.ME1312.Uno.Network.Packet.PacketOutAlert;
 import net.ME1312.Uno.Network.Packet.PacketOutUpdateHand;
 
@@ -50,10 +49,10 @@ public class UnoCommand {
                     for (int i = 1; i < args.length; i++) {
                         str += "_" + args[i];
                     }
-                    server.config.get().getSection("Settings").getSection("SubData").set("Password", str);
+                    server.config.get().getMap("Settings").getMap("SubData").set("Password", str);
                     server.log.message.println("The server's password has been updated");
                 } else {
-                    server.config.get().getSection("Settings").getSection("SubData").set("Password", "");
+                    server.config.get().getMap("Settings").getMap("SubData").set("Password", "");
                     server.log.message.println("The server's password has been disabled");
                 }
             }
@@ -131,7 +130,7 @@ public class UnoCommand {
                     LinkedList<GameRule> rules = new LinkedList<GameRule>();
                     rules.addAll(server.rules);
                     server.lastGame = null;
-                    server.game = new Game(server, players, rules, server.config.get().getSection("Settings").getInt("Starting-Cards", 7), server.config.get().getSection("Settings").getInt("Turn-Timeout", 60));
+                    server.game = new Game(server, players, rules, server.config.get().getMap("Settings").getInt("Starting-Cards", 7), server.config.get().getMap("Settings").getInt("Turn-Timeout", 60));
                     if (restart) {
                         for (Player other : players)
                             other.getSubData().sendPacket(new PacketOutAlert("The game has been reset"));

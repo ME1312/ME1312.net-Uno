@@ -1,6 +1,7 @@
 package net.ME1312.Uno.Network.Packet;
 
 import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
 import net.ME1312.Galaxi.Library.Version.Version;
 import net.ME1312.Uno.Game.Player;
 import net.ME1312.Uno.Network.Client;
@@ -25,14 +26,14 @@ public class PacketPlayerList implements PacketIn, PacketOut {
     }
 
     @Override
-    public void execute(Client client, YAMLSection data) throws Throwable {
+    public void execute(Client client, ObjectMap<String> data) throws Throwable {
         client.sendPacket(new PacketPlayerList(server, (data.contains("id"))?data.getRawString("id"):null));
     }
 
     @Override
-    public YAMLSection generate() throws Throwable {
-        YAMLSection info = new YAMLSection();
-        YAMLSection players = new YAMLSection();
+    public ObjectMap<String> generate() throws Throwable {
+        ObjectMap<String> info = new ObjectMap<String>();
+        ObjectMap<String> players = new ObjectMap<String>();
         BigInteger i = BigInteger.ZERO;
         for (Player player : server.players.values()) {
             players.set(i.toString(), new YAMLSection(new JSONObject(player.toString())));

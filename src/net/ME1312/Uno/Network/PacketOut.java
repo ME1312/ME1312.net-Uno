@@ -1,6 +1,6 @@
 package net.ME1312.Uno.Network;
 
-import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
 import net.ME1312.Galaxi.Library.Version.Version;
 
 /**
@@ -12,7 +12,7 @@ public interface PacketOut {
      *
      * @return Packet Contents
      */
-    YAMLSection generate() throws Throwable;
+    ObjectMap<String> generate() throws Throwable;
 
     /**
      * Get Packet Version

@@ -1,6 +1,6 @@
 package net.ME1312.Uno.Network;
 
-import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
 import net.ME1312.Galaxi.Library.Version.Version;
 
 /**
@@ -13,7 +13,7 @@ public interface PacketIn {
      * @param client Client Accepting
      * @param data Incoming Data
      */
-    void execute(Client client, YAMLSection data) throws Throwable;
+    void execute(Client client, ObjectMap<String> data) throws Throwable;
 
     /**
      * Get Packet Version

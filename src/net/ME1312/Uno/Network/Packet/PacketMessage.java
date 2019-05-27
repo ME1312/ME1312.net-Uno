@@ -1,6 +1,6 @@
 package net.ME1312.Uno.Network.Packet;
 
-import net.ME1312.Galaxi.Library.Config.YAMLSection;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
 import net.ME1312.Galaxi.Library.Log.Logger;
 import net.ME1312.Galaxi.Library.Version.Version;
 import net.ME1312.Uno.Game.Player;
@@ -25,7 +25,7 @@ public class PacketMessage implements PacketIn, PacketOut {
     }
 
     @Override
-    public void execute(Client client, YAMLSection data) throws Throwable {
+    public void execute(Client client, ObjectMap<String> data) throws Throwable {
         if (client.getHandler() instanceof Player) {
             log.info.println(((Player) client.getHandler()).getProfile().getString("displayName") + " > " + data.getRawString("message"));
             for (Client other : server.subdata.getClients()) {
@@ -35,8 +35,8 @@ public class PacketMessage implements PacketIn, PacketOut {
     }
 
     @Override
-    public YAMLSection generate() throws Throwable {
-        YAMLSection info = new YAMLSection();
+    public ObjectMap<String> generate() throws Throwable {
+        ObjectMap<String> info = new ObjectMap<String>();
         if (player != null) info.set("sender", player.getProfile().getString("name"));
         info.set("message", message);
         return info;
