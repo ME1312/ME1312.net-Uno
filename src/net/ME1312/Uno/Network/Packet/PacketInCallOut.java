@@ -19,7 +19,7 @@ public class PacketInCallOut implements PacketIn {
     @Override
     public void execute(Client client, ObjectMap<String> data) throws Throwable {
         if (server.game != null && client.getHandler() instanceof Player && ((Player) client.getHandler()).isPlaying()) {
-            server.game.callout((Player) client.getHandler(), server.players.get(data.getRawString("player")));
+            server.game.callout((Player) client.getHandler(), server.players.get(data.getString("player")));
         }
     }
 

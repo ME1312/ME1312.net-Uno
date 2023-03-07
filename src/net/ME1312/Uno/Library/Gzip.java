@@ -1,8 +1,8 @@
 package net.ME1312.Uno.Library;
 
 import java.io.*;
-import java.util.*;
-import java.util.zip.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Gzip Utility Class

@@ -1,9 +1,10 @@
 package net.ME1312.Uno.Game;
 
-import net.ME1312.Galaxi.Library.Log.Logger;
-import net.ME1312.Galaxi.Library.NamedContainer;
+import net.ME1312.Galaxi.Library.Container.ContainedPair;
+import net.ME1312.Galaxi.Log.Logger;
 import net.ME1312.Uno.Network.Packet.*;
 import net.ME1312.Uno.UnoServer;
+
 import org.json.JSONObject;
 
 import java.util.*;
@@ -265,7 +266,7 @@ public class Game {
         if (canplay) {
             Player player = players.get(currentPlayer);
             boolean canplay = false;
-            if (player.getCards().keySet().contains(id)) {
+            if (player.getCards().containsKey(id)) {
                 if (stackmode) {
                     if (player.getCard(id).getNumber() == 12 || player.getCard(id) == Card.WD4 || player.getCard(id) == Card.WD8)
                         canplay = true;
@@ -636,8 +637,8 @@ public class Game {
         spectators.remove(player);
     }
 
-    public NamedContainer<CardColor, Integer> getCurrentCard() {
-        return new NamedContainer<>(lastCardColor, lastCardNumber);
+    public ContainedPair<CardColor, Integer> getCurrentCard() {
+        return new ContainedPair<>(lastCardColor, lastCardNumber);
     }
 
     public Player getCurrentPlayer() {

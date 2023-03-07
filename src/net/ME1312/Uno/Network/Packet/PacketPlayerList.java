@@ -8,6 +8,7 @@ import net.ME1312.Uno.Network.Client;
 import net.ME1312.Uno.Network.PacketIn;
 import net.ME1312.Uno.Network.PacketOut;
 import net.ME1312.Uno.UnoServer;
+
 import org.json.JSONObject;
 
 import java.math.BigInteger;
@@ -27,7 +28,7 @@ public class PacketPlayerList implements PacketIn, PacketOut {
 
     @Override
     public void execute(Client client, ObjectMap<String> data) throws Throwable {
-        client.sendPacket(new PacketPlayerList(server, (data.contains("id"))?data.getRawString("id"):null));
+        client.sendPacket(new PacketPlayerList(server, (data.contains("id"))?data.getString("id"):null));
     }
 
     @Override

@@ -38,8 +38,8 @@ public class PacketOutStartGame implements PacketOut {
             info.set("cards", cardlist);
         }
         ObjectMap<String> cardinfo = new ObjectMap<String>();
-        cardinfo.set("color", game.getCurrentCard().name().toString());
-        cardinfo.set("number", game.getCurrentCard().get());
+        cardinfo.set("color", game.getCurrentCard().key.toString());
+        cardinfo.set("number", game.getCurrentCard().value);
         info.set("houseCard", cardinfo);
         return info;
     }

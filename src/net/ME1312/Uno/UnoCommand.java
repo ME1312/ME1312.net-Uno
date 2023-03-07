@@ -1,7 +1,7 @@
 package net.ME1312.Uno;
 
-import net.ME1312.Galaxi.Plugin.Command.Command;
-import net.ME1312.Galaxi.Plugin.Command.CommandSender;
+import net.ME1312.Galaxi.Command.Command;
+import net.ME1312.Galaxi.Command.CommandSender;
 import net.ME1312.Uno.Game.Card;
 import net.ME1312.Uno.Game.Game;
 import net.ME1312.Uno.Game.GameRule;
@@ -11,7 +11,10 @@ import net.ME1312.Uno.Network.Packet.PacketOutUpdateHand;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Command Class
@@ -221,7 +224,7 @@ public class UnoCommand {
                 }
             }
         }.description("Toggles game rules").usage("[rule]").help(help.toArray(new String[help.size()])).register("gamerule", "rule");
-        /*
+
         hi = 0;
         hs = "  ";
         help = new LinkedList<String>();
@@ -255,15 +258,18 @@ public class UnoCommand {
                         } else {
                             try {
                                 player.setPlaying(false);
-                                ArrayList<String> cids = new ArrayList<String>();
-                                cids.addAll(player.getCards().keySet());
+                                ArrayList<String> cids = new ArrayList<>(player.getCards().keySet());
                                 for (String id : cids) {
                                     player.removeCard(id);
                                 }
-                                LinkedList<String> cards = new LinkedList<String>();
-                                cards.addAll(Arrays.asList(args));
-                                cards.remove(0);
-                                for (String card : cards) {
+
+                                boolean first = true;
+                                for (String card : args) {
+                                    if (first) {
+                                        first = false;
+                                        continue;
+                                    }
+
                                     card = card.replace(' ', '_').replaceAll("[^A-Za-z0-9_]", "").toUpperCase();
                                     try {
                                         player.addCard(Card.valueOf(card));
@@ -275,6 +281,7 @@ public class UnoCommand {
                                 player.setPlaying(true);
                                 for (Player other : server.game.getAllPlayers()) {
                                     other.getSubData().sendPacket(new PacketOutUpdateHand(server.game, other));
+                                    other.getSubData().sendPacket(new PacketOutAlert(player.getProfile().getString("displayName") + " actually cheated"));
                                 }
                                 server.game.beginTurn();
                                 server.log.message.println(player.getProfile().getString("displayName") + '\'' + ((player.getProfile().getString("displayName").toLowerCase().endsWith("s"))?"":"s") +  " hand has been updated");
@@ -290,7 +297,7 @@ public class UnoCommand {
                 }
             }
         }.description("Sets a players deck").usage("<player>", "<cards...>").help(help.toArray(new String[help.size()])).register("stack", "rig");
-        */
+
         new Command(server.app) {
             @Override
             public void command(CommandSender sender, String handle, String[] args) {

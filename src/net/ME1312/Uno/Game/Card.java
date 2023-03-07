@@ -8,8 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import static net.ME1312.Uno.Game.CardColor.*;
 import static net.ME1312.Uno.Game.CardAction.*;
+import static net.ME1312.Uno.Game.CardColor.*;
 
 public enum Card {
     // Red 0-9

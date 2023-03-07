@@ -1,5 +1,14 @@
 package net.ME1312.Uno.Network;
 
+import net.ME1312.Galaxi.Library.Container.Container;
+import net.ME1312.Galaxi.Library.Map.ObjectMap;
+import net.ME1312.Galaxi.Library.Util;
+import net.ME1312.Galaxi.Library.Version.Version;
+import net.ME1312.Galaxi.Log.Logger;
+import net.ME1312.Uno.Library.Exception.IllegalPacketException;
+import net.ME1312.Uno.Network.Packet.*;
+import net.ME1312.Uno.UnoServer;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -14,20 +23,18 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketSe
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
-import net.ME1312.Galaxi.Library.Map.ObjectMap;
-import net.ME1312.Galaxi.Library.Container;
-import net.ME1312.Galaxi.Library.Log.Logger;
-import net.ME1312.Galaxi.Library.Util;
-import net.ME1312.Galaxi.Library.Version.Version;
-import net.ME1312.Uno.Library.Exception.IllegalPacketException;
-import net.ME1312.Uno.Network.Packet.*;
-import net.ME1312.Uno.UnoServer;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.*;
-import java.util.*;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * SubDataServer Class
@@ -89,7 +96,7 @@ public final class SubDataServer {
                             @Override
                             protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
                                 if (frame instanceof TextWebSocketFrame) {
-                                    if (!clients.keySet().contains(remoteAddress.toString())) addClient(ch);
+                                    if (!clients.containsKey(remoteAddress.toString())) addClient(ch);
                                     clients.get(remoteAddress.toString()).recievePacket(((TextWebSocketFrame) frame).text());
                                 } else {
                                     String message = "unsupported frame type: " + frame.getClass().getName();
@@ -98,7 +105,7 @@ public final class SubDataServer {
                             }
                         });
                         ch.closeFuture().addListener(future -> {
-                            if (clients.keySet().contains(remoteAddress.toString())) {
+                            if (clients.containsKey(remoteAddress.toString())) {
                                 JSONObject profile = clients.get(remoteAddress.toString()).getProfile();
                                 removeClient(clients.get(remoteAddress.toString()));
                                 if (profile != null) for (Client other : getClients()) {
@@ -223,7 +230,7 @@ public final class SubDataServer {
     public void removeClient(Client client) throws IOException {
         if (Util.isNull(client)) throw new NullPointerException();
         SocketAddress address = client.getAddress();
-        if (clients.keySet().contains(address.toString())) {
+        if (clients.containsKey(address.toString())) {
             clients.remove(address.toString());
             if (!client.closed) client.disconnect();
             log.info.println(client.getAddress().toString() + ((client.getProfile() == null)?"":" (" + client.getProfile().getString("displayName") + ")") + " has disconnected");
@@ -239,7 +246,7 @@ public final class SubDataServer {
     public void removeClient(InetSocketAddress address) throws IOException {
         if (Util.isNull(address)) throw new NullPointerException();
         Client client = clients.get(address.toString());
-        if (clients.keySet().contains(address.toString())) {
+        if (clients.containsKey(address.toString())) {
             clients.remove(address.toString());
             client.disconnect();
             log.info.println(client.getAddress().toString() + " has disconnected");
@@ -255,7 +262,7 @@ public final class SubDataServer {
     public void removeClient(String address) throws IOException {
         if (Util.isNull(address)) throw new NullPointerException();
         Client client = clients.get(address);
-        if (clients.keySet().contains(address)) {
+        if (clients.containsKey(address)) {
             clients.remove(address);
             client.disconnect();
             log.info.println(client.getAddress().toString() + " has disconnected");
@@ -270,7 +277,7 @@ public final class SubDataServer {
      */
     public static void registerPacket(PacketIn packet, String handle) {
         if (Util.isNull(packet, handle)) throw new NullPointerException();
-        List<PacketIn> list = (pIn.keySet().contains(handle.toLowerCase()))?pIn.get(handle.toLowerCase()):new ArrayList<PacketIn>();
+        List<PacketIn> list = (pIn.containsKey(handle.toLowerCase()))?pIn.get(handle.toLowerCase()):new ArrayList<PacketIn>();
         if (!list.contains(packet)) {
             list.add(packet);
             pIn.put(handle.toLowerCase(), list);
@@ -354,7 +361,7 @@ public final class SubDataServer {
     protected static ObjectMap<String> encodePacket(Client client, PacketOut packet) throws IllegalPacketException, InvocationTargetException {
         ObjectMap<String> section = new ObjectMap<String>();
 
-        if (!pOut.keySet().contains(packet.getClass())) throw new IllegalPacketException(packet.getClass().getCanonicalName() + ": Unknown PacketOut Channel: " + packet.getClass().getCanonicalName());
+        if (!pOut.containsKey(packet.getClass())) throw new IllegalPacketException(packet.getClass().getCanonicalName() + ": Unknown PacketOut Channel: " + packet.getClass().getCanonicalName());
         if (packet.getVersion().toString() == null) throw new NullPointerException(packet.getClass().getCanonicalName() + ": PacketOut getVersion() cannot be null: " + packet.getClass().getCanonicalName());
 
         try {
@@ -377,14 +384,14 @@ public final class SubDataServer {
      */
     protected static List<PacketIn> decodePacket(Client client, ObjectMap<String> data) throws IllegalPacketException {
         if (!data.contains("h") || !data.contains("v")) throw new IllegalPacketException(client.getAddress().toString() + ": Unknown Packet Format: " + data.toString());
-        if (!pIn.keySet().contains(data.getRawString("h"))) throw new IllegalPacketException(client.getAddress().toString() + ": Unknown PacketIn Channel: " + data.getRawString("h"));
+        if (!pIn.containsKey(data.getString("h"))) throw new IllegalPacketException(client.getAddress().toString() + ": Unknown PacketIn Channel: " + data.getString("h"));
 
         List<PacketIn> list = new ArrayList<PacketIn>();
-        for (PacketIn packet : pIn.get(data.getRawString("h"))) {
-            if (packet.isCompatible(new Version(data.getRawString("v")))) {
+        for (PacketIn packet : pIn.get(data.getString("h"))) {
+            if (packet.isCompatible(new Version(data.getString("v")))) {
                 list.add(packet);
             } else {
-                log.error.println(new IllegalPacketException(client.getAddress().toString() + ": Packet Version Mismatch in " + data.getRawString("h") + ": " + data.getRawString("v") + " =/= " + packet.getVersion().toString()));
+                log.error.println(new IllegalPacketException(client.getAddress().toString() + ": Packet Version Mismatch in " + data.getString("h") + ": " + data.getString("v") + " =/= " + packet.getVersion().toString()));
             }
         }
 
