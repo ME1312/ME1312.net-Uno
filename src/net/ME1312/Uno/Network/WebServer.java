@@ -36,7 +36,7 @@ public class WebServer extends SimpleChannelInboundHandler<FullHttpRequest> {
             return;
         }
         // Send the index page
-        if ("/".equals(req.uri()) || "/index.html".equals(req.uri())) {
+        if ("/".equals(req.uri())) {
             String page;
             if (System.getProperty("webserver.debug", "false").equalsIgnoreCase("true")) {
                 if (!new File(GalaxiEngine.getInstance().getRuntimeDirectory(), "index.html").exists()) Util.copyFromJar(WebServer.class.getClassLoader(), "net/ME1312/Uno/Library/Files/index.html", new File(GalaxiEngine.getInstance().getRuntimeDirectory(), "index.html").getPath());

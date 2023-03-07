@@ -263,21 +263,15 @@ public class UnoCommand {
                                     player.removeCard(id);
                                 }
 
-                                boolean first = true;
-                                for (String card : args) {
-                                    if (first) {
-                                        first = false;
-                                        continue;
-                                    }
-
-                                    card = card.replace(' ', '_').replaceAll("[^A-Za-z0-9_]", "").toUpperCase();
+                                for (int i = 1; i != args.length;) {
+                                    String card = args[i++].replace(' ', '_').replaceAll("[^A-Za-z0-9_]", "").toUpperCase();
                                     try {
                                         player.addCard(Card.valueOf(card));
                                     } catch (Exception e) {
                                         server.log.error.println(new InvocationTargetException(e, "Could not find card: " + card));
                                     }
                                 }
-                                if (player.getCards().size() <= 0) player.addCard(Card.YM);
+                                if (player.getCards().size() == 0) player.addCard(Card.W);
                                 player.setPlaying(true);
                                 for (Player other : server.game.getAllPlayers()) {
                                     other.getSubData().sendPacket(new PacketOutUpdateHand(server.game, other));

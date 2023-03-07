@@ -4,7 +4,7 @@
 		<title>ME1312.net Uno</title>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link href="//use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet" media="screen">
+		<link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet" media="screen">
 	</head>
 	<body>
 		<style>
@@ -814,7 +814,7 @@
 				<div class="disconnected" style="display: none;">
 					<span class="response">You have been disconnected</span><br>
 					<br>
-					<button onclick="window.location.replace('https://www.me1312.net/account/setup/eauth/#return=' + encodeURIComponent('http://' + location.hostname+':'+((location.port)?location.port:'80') + '#'));">Reconnect</button>
+					<button onclick="window.location.replace('https://www.me1312.net/account/setup/eauth/#return=' + encodeURIComponent(location.href.split('#', 2)[0] + '#'));">Reconnect</button>
 					<br>
 					<br>
 					<br>
@@ -1018,7 +1018,7 @@
 				});
 				
 				if (window.location.hash.length <= 1) {
-					window.location.replace("https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#'));
+					window.location.replace("https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent(location.href.split('#', 2)[0] + '#'));
 				} else {
 					var join = function(data) {
 						playerJoin(data.player);
@@ -1392,13 +1392,13 @@
 						$($("div.login div.page form.login").children("input")[0]).prop('disabled', true);
 						$($("div.login div.page form.login").children("button")[0]).prop('disabled', true);
 						header.fadeOut(50, function() {
-							header.html("Connecting to " + location.hostname+':'+((location.port)?location.port:'80'));
+							header.html("Connecting to " + location.hostname + ((location.port)?':'+location.port:''));
 							header.fadeIn(50);
 						})
 						$("div.login div.page form.login").fadeOut(150, function() {
 							$($("div.login div.page form.login").children(".response")[0]).html("");
 							$($($("div.login div.page form.login").parent()).children(".loading")[0]).fadeIn(150, function() {
-								var connection = new WebSocket("ws://" + location.hostname+':'+((location.port)?location.port:'80') + "/game");
+								var connection = new WebSocket(((location.protocol == "https:")? "wss://" : "ws://") + location.hostname + ((location.port)?':'+location.port:'') + location.pathname + "game");
 								connection.onerror = function() {
 									SubDataClient.sleeplock.disable();
 									$($($("div.login div.page form.login").parent()).children(".loading")[0]).fadeOut(150, function() {
@@ -1411,7 +1411,7 @@
 								};
 								connection.onopen = function() {
 									header.fadeOut(50, function() {
-										header.html("Logging into " + location.hostname+':'+((location.port)?location.port:'80'));
+										header.html("Logging into " + location.hostname + ((location.port)?':'+location.port:''));
 										$("div.login div.page form.login").children("input")[0].value = "";
 										header.fadeIn(50, function() {
 											setTimeout(function() {
@@ -1440,7 +1440,7 @@
 														});
 													} else if (data.r == 3) {
 														connection.close();
-														window.location.replace("https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent("http://" + location.hostname+':'+((location.port)?location.port:'80') + '#'));
+														window.location.replace("https://www.me1312.net/account/setup/eauth/#return=" + encodeURIComponent(location.href.split('#', 2)[0] + '#'));
 													} else {
 														if ((data.r == 4)) {
 															$($('div.login div.page div.disconnected').children('.response')).html("You are already logged into this server");

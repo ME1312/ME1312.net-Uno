@@ -81,7 +81,6 @@ public final class SubDataServer {
 
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-                        Container<Boolean> first = new Container<Boolean>(true);
                         InetSocketAddress remoteAddress = ch.remoteAddress();
                         ChannelPipeline pipeline = ch.pipeline();
                         if (sslCtx != null) {
